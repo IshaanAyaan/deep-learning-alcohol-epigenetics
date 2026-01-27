@@ -1,0 +1,4 @@
+Model,AUC,AUC_CI_Low,AUC_CI_High,Accuracy,Precision,Recall,F1,Sensitivity,Specificity
+Elastic Net,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0
+Random Forest,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0
+EpiAlcNet,1.0,0.9999999999999999,1.0,1.0,1.0,1.0,1.0,1.0,1.0

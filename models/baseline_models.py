@@ -56,12 +56,14 @@ from dataclasses import dataclass
 import warnings
 
 # XGBoost is optional
+XGBOOST_AVAILABLE = False
+xgb = None
 try:
     import xgboost as xgb
     XGBOOST_AVAILABLE = True
-except ImportError:
+except (ImportError, Exception):
     XGBOOST_AVAILABLE = False
-    warnings.warn("XGBoost not available. Install with: pip install xgboost")
+    warnings.warn("XGBoost not available. Skipping XGBoost model.")
 
 
 @dataclass
