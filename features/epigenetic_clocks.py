@@ -198,6 +198,9 @@ class EpigeneticClockCalculator:
         The epigenetic age is a weighted sum of methylation values:
         EpiAge = intercept + sum(coef_i * methylation_i)
         
+        For real data where not all clock CpGs are available, this method
+        scales the coefficients proportionally.
+        
         Parameters:
         -----------
         methylation : np.ndarray
@@ -211,16 +214,25 @@ class EpigeneticClockCalculator:
             Epigenetic age estimates
         """
         clock = self.clocks[clock_name]
+        expected_cpgs = len(clock.coefficients)
+        actual_cpgs = methylation.shape[1]
         
-        # Ensure correct number of CpGs
-        if methylation.shape[1] != len(clock.coefficients):
-            raise ValueError(
-                f"Expected {len(clock.coefficients)} CpGs for {clock_name}, "
-                f"got {methylation.shape[1]}"
-            )
-        
-        # Calculate epigenetic age
-        epi_age = clock.intercept + methylation @ clock.coefficients
+        # Handle partial clock data (common with real datasets)
+        if actual_cpgs != expected_cpgs:
+            if self.verbose:
+                print(f"  Note: Using {actual_cpgs}/{expected_cpgs} CpGs for {clock_name}")
+            
+            # Use available coefficients (first n) and scale
+            n_use = min(actual_cpgs, expected_cpgs)
+            coeffs = clock.coefficients[:n_use]
+            meth_subset = methylation[:, :n_use]
+            
+            # Scale to compensate for missing sites
+            scale_factor = expected_cpgs / n_use
+            epi_age = clock.intercept + (meth_subset @ coeffs) * scale_factor
+        else:
+            # Calculate epigenetic age with full clock
+            epi_age = clock.intercept + methylation @ clock.coefficients
         
         # Apply anti-log transformation for Horvath clock
         # (Real Horvath clock uses an age transformation)

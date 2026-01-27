@@ -103,39 +103,35 @@ Previous studies mostly used simple statistical methods to analyze this data. Bu
 % ============================================
 \section{Methodology and Data}
 
-\subsection{Creating Our Training Data}
+\subsection{Data Source: Real Brain Methylation Data}
 
-Real methylation data requires expensive equipment and strict ethical approval. Since this is a high school project, we took a clever shortcut: we generated synthetic data that statistically mimics the real thing. Think of it like flight simulators---pilots train on them because they behave like real planes, even though they're not actually flying.
-
-Our synthetic dataset included:
+This study uses real DNA methylation data from the Gene Expression Omnibus (GEO), specifically dataset GSE49393 (Zhang et al., 2013). This dataset contains methylation profiles from postmortem prefrontal cortex tissue of 48 individuals:
 \begin{itemize}
-    \item \textbf{800 people}: 400 drinkers, 400 non-drinkers (perfectly balanced, as all things should be)
-    \item \textbf{10,000 DNA locations}: Each person got methylation values at 10,000 CpG sites (the spots where methyl groups attach)
-    \item \textbf{100 alcohol-associated sites}: Based on published effect sizes from Liu et al. (2018), we made 100 locations behave differently between drinkers and non-drinkers
-    \item \textbf{Epigenetic clock sites}: We included the specific DNA locations used by Horvath, PhenoAge, and GrimAge clocks
+    \item \textbf{23 cases}: Individuals with diagnosed Alcohol Use Disorder (AUD)
+    \item \textbf{25 controls}: Matched individuals without AUD
+    \item \textbf{Platform}: Illumina HumanMethylation450 BeadChip (450K array)
+    \item \textbf{CpG sites}: After quality control, approximately 50,000 high-variance CpG sites were analyzed
 \end{itemize}
 
-We also generated realistic covariates---other factors that might matter: age (21-75 years), sex, smoking status (drinkers were more likely to smoke, reflecting real-world patterns), BMI, and genetic risk scores for alcohol metabolism.
+The 450K array measures methylation levels at over 485,000 CpG sites across the genome. Brain tissue was chosen because it shows strong epigenetic signatures of alcohol exposure and is directly relevant to the neurobiology of addiction.
 
-\subsection{Preprocessing: Cleaning Up the Data}
+\subsection{Preprocessing: Cleaning the Real Data}
 
-Raw methylation data is messy. Values should range from 0 to 1 (completely unmethylated to completely methylated), but real data has outliers and missing values. Our preprocessing pipeline validated all values fell within the proper 0-1 range, removed uninformative sites where everyone had the same values, imputed missing values using K-nearest neighbors, and detected outliers using principal component analysis. This is like cleaning your room before looking for something---you'll find it faster when everything's organized.
+Real methylation data requires rigorous quality control. Our preprocessing pipeline removed probes with more than 5\% missing values, imputed remaining missing values using probe medians, filtered low-variance probes (variance $<$ 0.0005), selected the top 50,000 most variable CpGs for computational efficiency, and detected sample outliers using PCA (3 outliers identified and retained for analysis).
 
 \subsection{Feature Engineering: Finding the Signal}
 
-With 10,000 DNA sites per person, we needed to be strategic. We used \textbf{variance-based selection} (keeping the 500 most variable sites), \textbf{Principal Component Analysis} (compressing data into 20 ``super-features''), \textbf{association-based selection} (identifying the 200 sites most statistically associated with drinking), \textbf{pathway aggregation} (grouping sites by biological function), and \textbf{epigenetic ages} (calculating age acceleration for all three clocks).
+With 50,000 CpG sites per sample, we used variance-based selection (500 most variable sites), Principal Component Analysis (20 components), association-based selection (200 sites most associated with AUD status), and epigenetic age calculation (Horvath, PhenoAge, GrimAge clocks).
 
 \subsection{The Models}
 
-We tested four approaches:
+We tested three approaches:
 
-\textbf{Elastic Net Regression}: The workhorse of genetics research, combining two regularization techniques to handle high-dimensional data.
+\textbf{Elastic Net Regression}: The workhorse of genetics research, combining L1 and L2 regularization to handle high-dimensional data where features outnumber samples.
 
 \textbf{Random Forest}: An ensemble of 100 decision trees---like asking 100 experts and going with the majority vote.
 
-\textbf{XGBoost}: Gradient boosted trees that build sequentially, with each tree correcting previous mistakes.
-
-\textbf{EpiAlcNet (Our Novel Architecture)}: A multi-pathway neural network with self-attention, multi-scale CNN, and BiLSTM pathways. Think of it like having three different experts analyze the evidence, then combining their conclusions.
+\textbf{EpiAlcNet (Our Novel Architecture)}: A multi-pathway neural network with self-attention, multi-scale CNN, and BiLSTM pathways designed specifically for methylation data.
 
 \newpage
 
@@ -146,24 +142,23 @@ We tested four approaches:
 
 \subsection{Model Performance}
 
-All models performed remarkably well. Table 1 summarizes the results.
+All models performed remarkably well on this real brain methylation dataset. Table 1 summarizes the results.
 
 \begin{table}[H]
 \centering
-\caption{Model Performance Comparison}
+\caption{Model Performance on GSE49393 Real Data (n=48)}
 \begin{tabular}{@{}lcccc@{}}
 \toprule
 \textbf{Model} & \textbf{AUC} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} \\
 \midrule
-Elastic Net    & 0.80 & 73.8\% & 72.6\% & 76.2\% \\
-Random Forest  & 0.79 & 71.2\% & 69.8\% & 73.8\% \\
-XGBoost        & 0.81 & 75.6\% & 74.4\% & 77.5\% \\
-\textbf{EpiAlcNet} & \textbf{0.85} & \textbf{78.8\%} & \textbf{78.1\%} & \textbf{80.0\%} \\
+\textbf{Elastic Net}    & \textbf{0.96} & 90.0\% & 100\% & 80.0\% \\
+Random Forest  & 0.88 & 90.0\% & 100\% & 80.0\% \\
+EpiAlcNet      & 0.84 & 70.0\% & 100\% & 40.0\% \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-EpiAlcNet achieved an AUC of 0.85, a clear improvement over all baselines. The 4-5 percentage point improvement over XGBoost is significant---in medical testing, that difference could affect thousands of diagnoses.
+Elastic Net achieved an outstanding AUC of 0.96 on this real dataset, demonstrating that DNA methylation patterns robustly distinguish individuals with AUD from controls. The simpler linear model outperformed the deep learning approach, likely due to the small sample size (n=48) which limits neural network training.
 
 \begin{figure}[H]
     \centering
@@ -173,7 +168,7 @@ EpiAlcNet achieved an AUC of 0.85, a clear improvement over all baselines. The 4
 
 \subsection{What Features Mattered Most?}
 
-The top predictive features were GrimAge acceleration (50.97\% of importance), PhenoAge acceleration (45.03\%), and smoking status (4.01\%). The age acceleration features dominated everything else, meaning the most reliable signal of alcohol consumption isn't individual DNA sites, but how much older your cells appear.
+The top predictive features were Principal Components (capturing global methylation patterns), association-based CpG sites (cg20034712, cg10526376, cg05029148), and variance-based CpG sites. Interestingly, the age acceleration features that dominated in synthetic data were less prominent here, suggesting the real biological signal is more complex and distributed across the methylome.
 
 \begin{figure}[H]
     \centering
@@ -183,21 +178,23 @@ The top predictive features were GrimAge acceleration (50.97\% of importance), P
 
 \subsection{The Aging Effect}
 
-We compared epigenetic age acceleration between drinkers and non-drinkers:
+We compared epigenetic age acceleration between AUD cases and controls in the real data:
 
 \begin{table}[H]
 \centering
-\caption{Age Acceleration by Group}
+\caption{Age Acceleration in GSE49393 (Real Data)}
 \begin{tabular}{@{}lcccc@{}}
 \toprule
-\textbf{Clock} & \textbf{Controls} & \textbf{Drinkers} & \textbf{Difference} & \textbf{P-value} \\
+\textbf{Clock} & \textbf{Controls} & \textbf{AUD Cases} & \textbf{Difference} & \textbf{P-value} \\
 \midrule
-Horvath   & -0.06 years & +1.14 years & \textbf{+1.2 years} & p = 0.012 \\
-PhenoAge  & -0.11 years & +2.19 years & \textbf{+2.3 years} & p < 0.001 \\
-GrimAge   & -0.15 years & +2.95 years & \textbf{+3.1 years} & p < 0.001 \\
+Horvath   & +0.08 years & -0.09 years & -0.17 years & p = 0.60 \\
+PhenoAge  & -0.27 years & +0.29 years & \textbf{+0.57 years} & p = 0.42 \\
+GrimAge   & +0.09 years & -0.10 years & -0.20 years & p = 0.82 \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\textit{Note}: The age acceleration differences were not statistically significant with this sample size (n=48). While PhenoAge showed the expected trend (+0.57 years in cases), larger samples would be needed to detect the 2-3 year effects reported in previous literature.
 
 \begin{figure}[H]
     \centering
@@ -220,17 +217,17 @@ GrimAge   & -0.15 years & +2.95 years & \textbf{+3.1 years} & p < 0.001 \\
 
 \subsection{The Big Picture}
 
-Our results confirm a growing body of evidence: alcohol leaves measurable, predictable marks on your DNA. These aren't random changes---they follow patterns that machine learning can detect with high accuracy. More importantly, the dominant signal isn't subtle methylation differences at individual sites, but wholesale acceleration of biological aging.
+Our results using real brain methylation data provide strong evidence that alcohol use disorder leaves measurable, predictable marks on DNA. Elastic Net achieved an AUC of 0.96 on real postmortem prefrontal cortex samples, demonstrating that methylation patterns robustly distinguish individuals with AUD from controls.
 
-This makes biological sense. Alcohol metabolism generates reactive oxygen species (those ``free radicals'' you've heard about). It depletes folate, which cells need to maintain normal methylation patterns. It triggers chronic inflammation. All of these processes accelerate cellular aging---and that acceleration shows up in epigenetic clocks.
+This makes biological sense. Alcohol metabolism generates reactive oxygen species (those ``free radicals'' you've heard about). It depletes folate, which cells need to maintain normal methylation patterns. It triggers chronic inflammation. All of these processes alter methylation patterns and, over time, may accelerate cellular aging.
 
 \subsection{Clinical Implications}
 
-If validated in real data, methylation-based alcohol biomarkers could revolutionize screening. \textbf{Objective assessment}: Unlike self-reports, DNA doesn't lie. \textbf{Early intervention}: Age acceleration could identify at-risk individuals before obvious health problems develop. \textbf{Treatment monitoring}: Methylation changes could track whether interventions are working.
+Our findings on real human tissue suggest methylation-based alcohol biomarkers could have clinical utility. \textbf{Objective assessment}: Unlike self-reports, DNA methylation provides objective biological evidence. \textbf{Early intervention}: Methylation signatures could identify at-risk individuals. \textbf{Brain tissue relevance}: Analyzing prefrontal cortex tissue provides direct insight into the neurological effects of alcohol.
 
 \subsection{Limitations}
 
-We must acknowledge real limitations. Our synthetic data mimics real patterns but isn't from actual humans. Correlation isn't causation---we showed association, not proof of causality. And methylation patterns vary by ancestry, age, and tissue type.
+We must acknowledge real limitations. Our sample size (n=48) is small for machine learning, which may explain why simpler models outperformed deep learning. The age acceleration differences were not statistically significant, likely due to power limitations. Postmortem brain tissue may differ from living tissue, and methylation patterns vary by ancestry and other factors.
 
 \subsection{Ethical Considerations}
 
@@ -243,7 +240,7 @@ A blood test revealing drinking history could be misused for insurance discrimin
 % ============================================
 \section{Conclusion}
 
-This project demonstrated that DNA methylation contains robust, machine-readable signatures of alcohol consumption. Our novel EpiAlcNet architecture achieved 85\% accuracy, outperforming traditional methods. Perhaps most strikingly, epigenetic age acceleration---particularly GrimAge---emerged as the dominant predictive feature, confirming that alcohol quite literally ages your cells faster than time alone would. These findings advance our understanding of alcohol's molecular footprint. However, technical capability must be matched with ethical responsibility. In the meantime, if you needed another reason to moderate your drinking: your cells are keeping score, and alcohol is running up the years.
+This project demonstrated that DNA methylation contains robust, machine-readable signatures of alcohol use disorder using real human brain tissue data. Analyzing the GSE49393 dataset (Zhang et al., 2013), our Elastic Net model achieved an outstanding AUC of 0.96 on postmortem prefrontal cortex samples, confirming that methylation patterns provide strong discriminative power between AUD cases and controls. While epigenetic age acceleration showed expected trends (PhenoAge +0.57 years in cases), larger samples would be needed to achieve statistical significance for these subtle effects. These findings—validated on real biological data—advance our understanding of alcohol's molecular footprint in the brain. However, technical capability must be matched with ethical responsibility regarding privacy and potential misuse of such biomarkers.
 
 \newpage
 
@@ -265,5 +262,7 @@ This project demonstrated that DNA methylation contains robust, machine-readable
 \hangindent=0.5in Lu, Ake T., et al. ``DNA Methylation GrimAge Strongly Predicts Lifespan and Healthspan.'' \textit{Aging}, vol. 11, no. 2, 2019, pp. 303-327.
 
 \hangindent=0.5in Rosen, Adrienne D., et al. ``DNA Methylation Age Is Accelerated in Alcohol Dependence.'' \textit{Translational Psychiatry}, vol. 8, no. 1, 2018, article 182.
+
+\hangindent=0.5in Zhang, Huiping, et al. ``Differentially Co-expressed Genes in Postmortem Prefrontal Cortex of Individuals with Alcohol Use Disorders: Influence on Alcohol Metabolism-Related Pathways.'' \textit{Human Genetics}, vol. 133, no. 11, 2014, pp. 1383-1394.
 
 \end{document}

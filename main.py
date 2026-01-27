@@ -93,6 +93,15 @@ def parse_args():
         '--random-seed', type=int, default=42,
         help='Random seed for reproducibility'
     )
+    parser.add_argument(
+        '--data-source', type=str, default='synthetic',
+        choices=['synthetic', 'geo'],
+        help='Use synthetic or real GEO data (default: synthetic)'
+    )
+    parser.add_argument(
+        '--geo-id', type=str, default='GSE49393',
+        help='GEO accession number if using real data (default: GSE49393)'
+    )
     return parser.parse_args()
 
 
@@ -128,18 +137,32 @@ def main():
         path.mkdir(parents=True, exist_ok=True)
     
     # =========================================================================
-    # STEP 1: DATA GENERATION
+    # STEP 1: DATA LOADING
     # =========================================================================
     print("\n" + "=" * 70)
-    print("STEP 1: DATA GENERATION")
+    print("STEP 1: DATA LOADING")
     print("=" * 70)
     
-    from data.synthetic_generator import generate_methylation_data
-    
-    data = generate_methylation_data(
-        n_samples=args.n_samples,
-        random_state=args.random_seed
-    )
+    if args.data_source == 'geo':
+        # Load real GEO data
+        print(f"\n[REAL DATA MODE] Loading {args.geo_id} from GEO...")
+        from data.geo_loader import load_geo_dataset
+        
+        data = load_geo_dataset(
+            gse_id=args.geo_id,
+            random_state=args.random_seed
+        )
+        data_source_label = f"GEO {args.geo_id}"
+    else:
+        # Generate synthetic data
+        print(f"\n[SYNTHETIC MODE] Generating {args.n_samples} synthetic samples...")
+        from data.synthetic_generator import generate_methylation_data
+        
+        data = generate_methylation_data(
+            n_samples=args.n_samples,
+            random_state=args.random_seed
+        )
+        data_source_label = "Synthetic"
     
     # Extract key components
     methylation = data['methylation']
@@ -151,7 +174,7 @@ def main():
     # Get labels
     y = covariates['alcohol_status'].values.astype(int)
     
-    print(f"\nDataset generated:")
+    print(f"\nDataset loaded ({data_source_label}):")
     print(f"  - Samples: {methylation.shape[0]}")
     print(f"  - CpG sites: {methylation.shape[1]}")
     print(f"  - Cases (alcohol): {y.sum()}")
