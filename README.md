@@ -3,21 +3,30 @@
 ## Machine Learning on DNA Methylation to Predict Alcohol Use and Epigenetic Aging
 
 **Author:** Ishaan Ranjan  
-**Date:** January 25, 2026  
+**Date:** January 2026  
 **Course:** Genetics - Mrs. Hagerman
 
 ---
 
 ## Overview
 
-This project develops a novel multi-pathway deep learning architecture (**EpiAlcNet**) to predict alcohol use outcomes from blood DNA methylation patterns. The model integrates epigenetic signals, biological aging markers, and genetic risk factors to achieve high-accuracy prediction while providing insights into how alcohol affects the epigenome.
+This project develops machine learning models to predict alcohol use disorder (AUD) from DNA methylation patterns using **real biological data** from the Gene Expression Omnibus (GEO). The analysis demonstrates that methylation patterns in brain tissue robustly distinguish individuals with AUD from controls, achieving an **AUC of 0.96** with Elastic Net regression.
 
-### Key Features
+### Key Findings
 
-- **Novel Architecture**: Multi-pathway deep learning with attention mechanisms, multi-scale CNNs, and BiLSTM
-- **Epigenetic Clock Integration**: Incorporates Horvath, PhenoAge, and GrimAge clocks for biological aging analysis
-- **Genetic Risk Modeling**: Includes simulated polygenic risk scores based on GWAS variants
-- **Comprehensive Analysis**: Statistical testing, cross-validation, and publication-quality visualizations
+- **Elastic Net achieved 0.96 AUC** on real brain methylation data (GSE49393)
+- Random Forest achieved 0.88 AUC
+- EpiAlcNet deep learning model achieved 0.84 AUC
+- PhenoAge showed +0.57 years acceleration in AUD cases (not significant with n=48)
+
+### Data Source
+
+**GSE49393** (Zhang et al., 2013)
+- 48 postmortem prefrontal cortex samples
+- 23 individuals with Alcohol Use Disorder (AUD)
+- 25 matched controls
+- Illumina HumanMethylation450 BeadChip (450K array)
+- ~50,000 CpG sites retained after quality control
 
 ---
 
@@ -27,7 +36,9 @@ This project develops a novel multi-pathway deep learning architecture (**EpiAlc
 AlcoholMethylationML/
 ├── data/
 │   ├── __init__.py
-│   └── synthetic_generator.py      # Generates realistic methylation data
+│   ├── synthetic_generator.py      # Generates synthetic methylation data
+│   ├── geo_loader.py               # Downloads/processes real GEO data
+│   └── geo_cache/                  # Cached downloaded datasets
 ├── preprocessing/
 │   ├── __init__.py
 │   └── methylation_pipeline.py     # Data cleaning and QC
@@ -37,7 +48,7 @@ AlcoholMethylationML/
 │   └── feature_engineering.py      # Feature extraction pipeline
 ├── models/
 │   ├── __init__.py
-│   ├── baseline_models.py          # Elastic Net, Random Forest, XGBoost
+│   ├── baseline_models.py          # Elastic Net, Random Forest
 │   └── deep_methylation_net.py     # Novel EpiAlcNet architecture
 ├── analysis/
 │   ├── __init__.py
@@ -45,14 +56,15 @@ AlcoholMethylationML/
 ├── visualization/
 │   ├── __init__.py
 │   └── plotting.py                 # Publication-quality figures
-├── outputs/
+├── outputs/                        # Synthetic data results
+├── outputs_real/                   # Real GEO data results
 │   ├── figures/                    # Generated plots
-│   ├── models/                     # Model checkpoints
 │   └── results/                    # CSV results
 ├── main.py                         # Main execution script
 ├── requirements.txt                # Python dependencies
 ├── README.md                       # This file
-└── paper.md                        # Full research paper
+├── paper.md                        # Full research paper
+└── submit_paper.tex                # LaTeX submission version
 ```
 
 ---
@@ -77,7 +89,7 @@ pip install -r requirements.txt
 ### Dependencies
 
 - **Core**: numpy, pandas, scipy
-- **ML**: scikit-learn, torch, xgboost
+- **ML**: scikit-learn, torch
 - **Visualization**: matplotlib, seaborn
 - **Progress**: tqdm
 
@@ -85,138 +97,123 @@ pip install -r requirements.txt
 
 ## Usage
 
-### Quick Start
+### Running with Real GEO Data (Recommended)
 
 ```bash
-# Run full pipeline
-python main.py
+# Run with real brain methylation data from GEO
+python3 main.py --data-source geo --geo-id GSE49393 --output-dir outputs_real
+```
 
-# Run in test mode (smaller dataset, faster)
-python main.py --test-mode
+### Running with Synthetic Data
 
-# Custom sample size
-python main.py --n-samples 1000
+```bash
+# Run with synthetic data (for testing/development)
+python3 main.py --data-source synthetic --n-samples 800 --output-dir outputs
+
+# Test mode (smaller dataset)
+python3 main.py --test-mode --data-source synthetic
 ```
 
 ### Command Line Options
 
 | Argument | Description | Default |
 |----------|-------------|---------|
+| `--data-source` | Use `geo` for real data or `synthetic` | synthetic |
+| `--geo-id` | GEO accession number | GSE49393 |
 | `--test-mode` | Use smaller dataset for testing | False |
-| `--n-samples` | Number of samples to generate | 800 |
+| `--n-samples` | Number of synthetic samples | 800 |
 | `--output-dir` | Directory for results | outputs |
 | `--random-seed` | Random seed for reproducibility | 42 |
 
 ---
 
+## Results on Real Data (GSE49393)
+
+### Model Performance
+
+| Model | AUC | 95% CI | Accuracy | Precision | Recall |
+|-------|-----|--------|----------|-----------|--------|
+| **Elastic Net** | **0.96** | 0.81–1.00 | 90% | 100% | 80% |
+| Random Forest | 0.88 | 0.56–1.00 | 90% | 100% | 80% |
+| EpiAlcNet | 0.84 | 0.43–1.00 | 70% | 100% | 40% |
+
+### Epigenetic Age Acceleration
+
+| Clock | Controls | AUD Cases | Difference | P-value |
+|-------|----------|-----------|------------|---------|
+| Horvath | +0.08 years | -0.09 years | -0.17 years | 0.60 |
+| PhenoAge | -0.27 years | +0.29 years | **+0.57 years** | 0.42 |
+| GrimAge | +0.09 years | -0.10 years | -0.20 years | 0.82 |
+
+> **Note**: Age acceleration differences were not statistically significant with this sample size (n=48). Larger samples (n>200) would be needed to detect the 2-3 year effects reported in previous literature.
+
+### Top Predictive Features
+
+1. PC18 (Principal Component)
+2. cg20034712 (association-based CpG)
+3. cg10526376 (variance-based CpG)
+4. cg05029148 (association-based CpG)
+5. cg19149522 (association-based CpG)
+
+---
+
 ## Methodology
 
-### 1. Data Generation
+### 1. Data Acquisition
 
-The synthetic data generator creates realistic methylation patterns based on published EWAS studies:
-
-- **10,000 CpG sites** with bimodal beta distributions
-- **100 alcohol-associated CpGs** with effect sizes from Liu et al. (2018)
-- **Epigenetic clock CpGs**: Horvath (353), PhenoAge (513), GrimAge (1030)
-- **Covariates**: Age, sex, smoking, BMI, cell proportions
-- **Genetic risk scores** based on GWAS variants (ADH1B, ALDH2, etc.)
+The GEO loader (`data/geo_loader.py`) automatically:
+- Downloads the GSE49393 series matrix from NCBI FTP
+- Parses methylation values and phenotype data
+- Extracts alcohol use disorder status, age, and sex
 
 ### 2. Preprocessing Pipeline
 
-- Beta value validation and cleaning
-- Missing value imputation (KNN-based)
-- Low variance probe filtering
-- Sample outlier detection
-- Optional covariate adjustment
+- Removes probes with >5% missing values
+- Imputes remaining missing values using probe medians
+- Filters low-variance probes (variance < 0.0005)
+- Selects top 50,000 most variable CpGs
+- Detects sample outliers using PCA
 
 ### 3. Feature Engineering
 
 - **Top variance CpGs**: 500 most variable sites
 - **PCA components**: First 20 principal components
 - **Association features**: 200 most predictive sites
-- **Pathway aggregation**: Alcohol metabolism, immune, liver genes
-- **Epigenetic ages**: 3 clock age accelerations
+- **Epigenetic ages**: Horvath, PhenoAge, GrimAge clocks
 
-### 4. Model Architecture
+### 4. Models
 
-#### Baseline Models
-- Elastic Net Logistic Regression
-- Random Forest
-- XGBoost
+#### Elastic Net Logistic Regression
+- L1 + L2 regularization for high-dimensional data
+- 5-fold cross-validation for hyperparameter tuning
 
-#### EpiAlcNet (Novel Deep Learning)
+#### Random Forest
+- Ensemble of 100 decision trees
+- Handles nonlinear relationships
 
-```
-INPUT: CpG Sites + Covariates + Epigenetic Ages
-           │
-    ┌──────┴──────┬──────────────┐
-    │             │              │
- ATTENTION    MULTI-SCALE    BiLSTM
-  PATHWAY       CNN         TEMPORAL
-    │             │              │
-    └──────┬──────┴──────────────┘
-           │
-      FUSION MODULE
-    (+ Covariates + Age)
-           │
-     PREDICTION HEAD
-           │
-    OUTPUT: Alcohol Probability
-```
-
-**Key Innovations:**
-1. Self-attention learns CpG importance
-2. Multi-scale convolutions (k=3,7,15) capture different pattern scales
-3. Bidirectional LSTM captures sequential dependencies
-4. Direct integration of epigenetic age acceleration
-
-### 5. Statistical Analysis
-
-- **Metrics**: AUC, accuracy, precision, recall, F1, sensitivity, specificity
-- **Cross-validation**: 5-fold stratified CV
-- **Bootstrap CI**: 95% confidence intervals for AUC
-- **Group comparisons**: t-tests, Mann-Whitney U, Cohen's d
-- **Multiple testing**: Benjamini-Hochberg FDR correction
-
----
-
-## Results
-
-### Expected Performance
-
-Based on the synthetic data with realistic effect sizes:
-
-| Model | AUC | Accuracy | F1 |
-|-------|-----|----------|-----|
-| Elastic Net | 0.78-0.82 | 0.72-0.76 | 0.70-0.75 |
-| Random Forest | 0.76-0.80 | 0.70-0.74 | 0.68-0.73 |
-| XGBoost | 0.79-0.83 | 0.73-0.77 | 0.71-0.76 |
-| **EpiAlcNet** | **0.82-0.88** | **0.76-0.82** | **0.74-0.80** |
-
-### Age Acceleration Findings
-
-| Clock | Control | Alcohol | Difference | p-value |
-|-------|---------|---------|------------|---------|
-| Horvath | ~0 years | +1.2 years | +1.2 years | <0.05 |
-| PhenoAge | ~0 years | +2.3 years | +2.3 years | <0.001 |
-| GrimAge | ~0 years | +3.1 years | +3.1 years | <0.001 |
+#### EpiAlcNet (Deep Learning)
+- Multi-pathway architecture with:
+  - Self-attention for CpG importance learning
+  - Multi-scale CNN (kernels 3, 7, 15) for local patterns
+  - Bidirectional LSTM for sequential dependencies
+- Requires larger sample sizes for optimal performance
 
 ---
 
 ## Output Files
 
-### Figures (`outputs/figures/`)
+### Figures (`outputs_real/figures/`)
 
 1. `roc_curves.png` - ROC curves for all models
 2. `confusion_matrices.png` - Confusion matrices
 3. `model_comparison.png` - Bar chart comparing metrics
-4. `feature_importance.png` - Top 25 important CpGs
+4. `feature_importance.png` - Top 25 important features
 5. `age_acceleration.png` - Violin plots by group
 6. `learning_curves.png` - Training dynamics
 7. `pca_scatter.png` - Sample clustering
 8. `methylation_heatmap.png` - Top differential CpGs
 
-### Results (`outputs/results/`)
+### Results (`outputs_real/results/`)
 
 - `model_comparison.csv` - Performance metrics
 - `feature_importance.csv` - Ranked features
@@ -229,7 +226,7 @@ Based on the synthetic data with realistic effect sizes:
 
 ### DNA Methylation
 
-DNA methylation is a chemical modification (addition of methyl group to cytosine) that regulates gene expression without changing the DNA sequence. Methylation at CpG sites is:
+DNA methylation is a chemical modification (addition of methyl group to cytosine) that regulates gene expression. Methylation at CpG sites is:
 - Heritable but modifiable by environment
 - Tissue-specific and age-dependent
 - Altered by lifestyle factors including alcohol
@@ -237,45 +234,20 @@ DNA methylation is a chemical modification (addition of methyl group to cytosine
 ### Alcohol and Epigenetics
 
 Chronic alcohol exposure affects methylation through:
-1. **Folate metabolism disruption** - Alcohol depletes folate, a methyl donor
-2. **Oxidative stress** - ROS alter DNA methylation machinery
+1. **Folate metabolism disruption** - Alcohol depletes methyl donors
+2. **Oxidative stress** - Reactive oxygen species alter DNA
 3. **Inflammation** - Immune activation changes methylation profiles
-4. **Liver metabolism** - Acetaldehyde directly modifies DNA
+4. **Neurodegeneration** - Brain tissue shows distinct patterns
 
-### Epigenetic Clocks
+### Dataset: GSE49393
 
-Biological age estimators trained on methylation:
-- **Horvath Clock**: Multi-tissue, 353 CpGs
-- **PhenoAge**: Mortality-predictive, 513 CpGs
-- **GrimAge**: Best mortality predictor, 1030 CpGs
-
----
-
-## Ethical Considerations
-
-### Privacy
-- Methylation data is sensitive biological information
-- All data in this project is synthetic
-- Real applications require strict de-identification
-
-### Potential Misuse
-- Risk scores should NOT be used for:
-  - Employment screening
-  - Insurance decisions
-  - Criminal justice
-  - School discipline
-
-### Best Practices
-- Inform consent required
-- Report uncertainty and error rates
-- Test for demographic bias
-- Use for research and voluntary clinical support only
+Published by Zhang et al. (2013), this dataset examined methylation changes in the prefrontal cortex of individuals with alcohol use disorder. The prefrontal cortex is critical for decision-making and is particularly affected by chronic alcohol exposure.
 
 ---
 
 ## References
 
-1. Lohoff, F. W., et al. (2018). Epigenome-wide association study of alcohol consumption. *Molecular Psychiatry*.
+1. Zhang, H., et al. (2014). Differentially co-expressed genes in postmortem prefrontal cortex of individuals with alcohol use disorders. *Human Genetics*.
 2. Liu, C., et al. (2018). A DNA methylation biomarker of alcohol consumption. *Molecular Psychiatry*.
 3. Horvath, S. (2013). DNA methylation age of human tissues and cell types. *Genome Biology*.
 4. Levine, M. E., et al. (2018). An epigenetic biomarker of aging. *Aging*.
@@ -284,14 +256,29 @@ Biological age estimators trained on methylation:
 
 ---
 
+## Ethical Considerations
+
+### Privacy
+- Methylation data is sensitive biological information
+- Real applications require strict de-identification and consent
+
+### Potential Misuse
+- Risk predictions should NOT be used for:
+  - Employment screening
+  - Insurance decisions
+  - Criminal justice
+  - School discipline
+
+---
+
 ## License
 
-This project is for educational purposes as part of a high school genetics course.
+This project is for educational purposes as part of a high school genetics course and ISEF competition.
 
 ---
 
 ## Contact
 
 **Ishaan Ranjan**  
-Genetics Course Project  
+ISEF 2026 Project  
 January 2026

@@ -1,21 +1,21 @@
 # Machine Learning on DNA Methylation to Predict Alcohol Use and Epigenetic Aging
 
-**A Novel Multi-Pathway Deep Learning Approach for Epigenetic Prediction**
+**A Multi-Pathway Approach Using Real Brain Methylation Data**
 
 ---
 
 **Author:** Ishaan Ranjan  
 **Institution:** High School Genetics Course  
 **Instructor:** Mrs. Hagerman  
-**Date:** January 25, 2026
+**Date:** January 2026
 
 ---
 
 ## Abstract
 
-Alcohol use disorder (AUD) affects millions of individuals worldwide and is associated with significant morbidity and mortality. Traditional assessment methods rely on self-reports, which can be incomplete or biased. DNA methylation, an epigenetic modification that reflects environmental exposures, offers a promising biological marker for objective assessment of alcohol exposure. This study presents EpiAlcNet, a novel multi-pathway deep learning architecture designed to predict alcohol use outcomes from blood DNA methylation patterns. The model integrates three parallel processing pathways—self-attention for CpG importance learning, multi-scale convolutions for local pattern detection, and bidirectional LSTM for sequential dependencies—with epigenetic age acceleration features from Horvath, PhenoAge, and GrimAge clocks. Using a comprehensive synthetic dataset modeled on published epigenome-wide association studies, EpiAlcNet achieved an area under the receiver operating characteristic curve (AUC) of 0.85, outperforming traditional machine learning approaches including Elastic Net (AUC=0.80) and XGBoost (AUC=0.81). Furthermore, statistical analysis revealed significant age acceleration in simulated alcohol users compared to controls: 1.2 years for Horvath (p<0.05), 2.3 years for PhenoAge (p<0.001), and 3.1 years for GrimAge (p<0.001). These findings demonstrate that DNA methylation contains reproducible signals associated with alcohol consumption and that deep learning can effectively leverage these signals for prediction while also capturing the relationship between alcohol exposure and accelerated biological aging.
+Alcohol use disorder (AUD) affects millions of individuals worldwide and is associated with significant morbidity and mortality. Traditional assessment methods rely on self-reports, which can be incomplete or biased. DNA methylation, an epigenetic modification that reflects environmental exposures, offers a promising biological marker for objective assessment of alcohol exposure. This study analyzes real DNA methylation data from the Gene Expression Omnibus (GSE49393), comprising postmortem prefrontal cortex samples from 48 individuals (23 with AUD, 25 controls). Using multiple machine learning approaches, we demonstrate that methylation patterns robustly distinguish individuals with AUD from controls, with Elastic Net regression achieving an area under the receiver operating characteristic curve (AUC) of **0.96**. Random Forest achieved 0.88 AUC, while our novel EpiAlcNet deep learning architecture achieved 0.84 AUC. Analysis of epigenetic age acceleration showed a trend toward accelerated aging in AUD cases (+0.57 years for PhenoAge), though effects were not statistically significant with this sample size. These findings demonstrate that DNA methylation in brain tissue contains strong, machine-detectable signals associated with alcohol use disorder.
 
-**Keywords:** DNA methylation, epigenetics, alcohol use disorder, machine learning, deep learning, epigenetic clocks, biological aging
+**Keywords:** DNA methylation, epigenetics, alcohol use disorder, machine learning, epigenetic clocks, biological aging, GSE49393
 
 ---
 
@@ -31,207 +31,136 @@ The field of epigenetics offers a promising avenue for developing objective biol
 
 Chronic alcohol consumption affects DNA methylation through multiple biological mechanisms. First, alcohol metabolism disrupts one-carbon metabolism, which is essential for providing methyl groups for DNA methylation. Specifically, alcohol oxidation consumes nicotinamide adenine dinucleotide (NAD+) and generates reactive oxygen species (ROS), which can damage DNA and alter the function of DNA methyltransferases (DNMTs). Second, alcohol promotes inflammation, which triggers widespread changes in the methylome of immune cells. Third, alcohol-induced liver damage alters hepatic gene expression patterns, with corresponding methylation changes detectable even in peripheral blood.
 
-Multiple epigenome-wide association studies (EWAS) have identified reproducible DNA methylation signatures of alcohol consumption. Liu et al. (2018) identified 144 CpG sites associated with alcohol intake in a meta-analysis of over 9,600 individuals, with the most significant associations occurring in genes related to immune function and lipid metabolism. Lohoff et al. (2018) found 96 differentially methylated CpG sites in individuals with AUD compared to controls, with enrichment for pathways related to neurotransmission and inflammation.
+Multiple epigenome-wide association studies (EWAS) have identified reproducible DNA methylation signatures of alcohol consumption. Liu et al. (2018) identified 144 CpG sites associated with alcohol intake in a meta-analysis of over 9,600 individuals. Lohoff et al. (2018) found 96 differentially methylated CpG sites in individuals with AUD compared to controls.
 
 ### 1.3 Epigenetic Clocks and Biological Aging
 
-Beyond individual CpG sites, DNA methylation patterns can be used to estimate "biological age"—a measure of physiological aging that may differ from chronological age. Epigenetic clocks are machine learning models trained to predict age from methylation values at specific CpG sites. The most widely used clocks include:
+Beyond individual CpG sites, DNA methylation patterns can be used to estimate "biological age"—a measure of physiological aging that may differ from chronological age. Epigenetic clocks are machine learning models trained to predict age from methylation values at specific CpG sites:
 
-1. **Horvath Clock (2013)**: Uses 353 CpG sites to estimate multi-tissue biological age, with a median absolute error of approximately 3.6 years.
+1. **Horvath Clock (2013)**: Uses 353 CpG sites to estimate multi-tissue biological age
+2. **PhenoAge (Levine et al., 2018)**: Uses 513 CpG sites trained on clinical biomarkers
+3. **GrimAge (Lu et al., 2019)**: Uses 1,030 CpG sites, best predictor of mortality
 
-2. **PhenoAge (Levine et al., 2018)**: Incorporates 513 CpG sites and was trained on clinical biomarkers associated with mortality risk, making it more sensitive to health status.
-
-3. **GrimAge (Lu et al., 2019)**: Uses 1,030 CpG sites and includes surrogate biomarkers for plasma proteins and smoking exposure, emerging as the strongest predictor of lifespan and healthspan.
-
-The difference between epigenetic age and chronological age, termed "age acceleration," provides a measure of biological aging rate. Positive age acceleration indicates that an individual is biologically older than expected, while negative values suggest decelerated aging. Several studies have linked alcohol consumption to accelerated epigenetic aging, with the largest effects observed for GrimAge.
-
-### 1.4 Machine Learning for Methylation-Based Prediction
-
-The high-dimensional nature of DNA methylation data—with modern arrays measuring over 850,000 CpG sites—presents both challenges and opportunities for machine learning. Traditional approaches have employed regularized regression methods, particularly Elastic Net, which combines L1 and L2 penalties to handle collinearity and perform feature selection. More recently, ensemble methods like Random Forest and gradient boosting (XGBoost) have been applied to capture nonlinear relationships.
-
-Deep learning offers potential advantages for methylation data, including the ability to learn hierarchical feature representations and model complex interactions without explicit specification. However, applying deep learning to methylation data requires careful architecture design to handle the high dimensionality and modest sample sizes typical of epigenetic studies.
-
-### 1.5 Research Questions and Hypotheses
+### 1.4 Research Questions
 
 This study addresses three primary research questions:
 
-1. Can machine learning models trained on blood DNA methylation accurately predict alcohol use status?
-
-2. Is alcohol exposure associated with accelerated epigenetic aging, and does age acceleration add predictive value?
-
-3. Can a novel deep learning architecture outperform traditional machine learning approaches for methylation-based prediction?
-
-We hypothesize that:
-- DNA methylation contains reproducible signals that enable prediction of alcohol use with moderate-to-high accuracy (AUC > 0.75)
-- Individuals with alcohol exposure will show significant positive age acceleration, particularly on mortality-predictive clocks (PhenoAge, GrimAge)
-- A multi-pathway deep learning architecture that integrates attention mechanisms with epigenetic age features will outperform baseline methods
+1. Can machine learning models trained on real brain DNA methylation accurately predict alcohol use disorder status?
+2. Is AUD associated with accelerated epigenetic aging in brain tissue?
+3. How do deep learning architectures compare to traditional machine learning for this task?
 
 ---
 
 ## 2. Methods
 
-### 2.1 Data Generation
+### 2.1 Data Source
 
-To develop and validate our methodology, we generated a synthetic dataset designed to realistically capture the properties of DNA methylation data from publicly available sources. This approach allows for reproducible research while mimicking the statistical characteristics of real EWAS data.
+We analyzed publicly available DNA methylation data from the Gene Expression Omnibus (GEO), specifically dataset **GSE49393** (Zhang et al., 2013).
 
-#### 2.1.1 Sample Characteristics
+#### 2.1.1 Dataset Characteristics
 
-The dataset comprised 800 samples split evenly between cases (individuals with alcohol exposure) and controls. Sample size was chosen to reflect typical EWAS study sizes while allowing for meaningful statistical analysis.
+| Characteristic | Value |
+|----------------|-------|
+| Total Samples | 48 |
+| AUD Cases | 23 |
+| Controls | 25 |
+| Tissue | Postmortem prefrontal cortex |
+| Platform | Illumina HumanMethylation450 BeadChip |
+| Original CpG sites | 485,577 |
+| CpG sites after QC | 50,000 |
 
-#### 2.1.2 Methylation Data Simulation
+The prefrontal cortex was chosen as it is directly relevant to the neurobiology of addiction and decision-making.
 
-Methylation beta values were simulated for 10,000 CpG sites using a mixture of beta distributions to capture the characteristic bimodal distribution of methylation data:
-- Hypomethylated sites (β ~ 0.2): 30% of sites
-- Hypermethylated sites (β ~ 0.8): 50% of sites
-- Intermediate sites (β ~ 0.5): 20% of sites
+### 2.2 Data Acquisition and Processing
 
-For 100 CpG sites, alcohol-associated effects were added based on published effect sizes from Liu et al. (2018), with mean difference of 0.02 and standard deviation of 0.015 between groups.
+Data was automatically downloaded and processed using our custom GEO loader module:
 
-#### 2.1.3 Epigenetic Clock Sites
-
-Additional CpG sites were generated for epigenetic clock calculations:
-- Horvath clock: 353 CpGs with age-correlated methylation
-- PhenoAge clock: 513 CpGs
-- GrimAge clock: 1,030 CpGs
-
-Age acceleration was simulated based on published associations:
-- Horvath: 1.5 years acceleration in alcohol group
-- PhenoAge: 2.5 years acceleration
-- GrimAge: 3.5 years acceleration
-
-#### 2.1.4 Covariates
-
-Comprehensive covariates were generated with realistic correlations:
-- Age: Uniform distribution (21-75 years)
-- Sex: Binary (0=female, 1=male)
-- Smoking status: Higher prevalence in alcohol group (50% vs 15%)
-- BMI: Normal distribution (mean 25, SD 4)
-- Polygenic risk score: Simulated based on GWAS effect sizes for ADH1B, ALDH2, and other variants
-- Estimated cell proportions: CD8T, CD4T, NK, B cells, monocytes, granulocytes
-
-### 2.2 Preprocessing Pipeline
-
-#### 2.2.1 Quality Control
-
-Methylation beta values were validated to ensure:
-- No values outside the [0,1] range
-- Removal of probes with zero variance
-- Detection and flagging of sample outliers using PCA-based methods
-
-#### 2.2.2 Normalization
-
-Values were clipped to a working range of [0.001, 0.999] to avoid numerical issues during transformation. The option to convert to M-values for statistical analysis was implemented using the formula:
-```
-M = log2(β / (1 - β))
+```python
+from data.geo_loader import load_geo_dataset
+data = load_geo_dataset(gse_id='GSE49393')
 ```
 
-#### 2.2.3 Missing Value Imputation
+#### 2.2.1 Quality Control Pipeline
 
-K-nearest neighbors (KNN) imputation with k=5 was used for any missing values, preserving the correlation structure of the data.
+1. **Probe filtering**: Removed probes with >5% missing values (55,170 removed)
+2. **Value imputation**: Imputed remaining missing values with probe medians
+3. **Variance filtering**: Removed probes with variance <0.0005 (235,739 removed)
+4. **Feature selection**: Selected top 50,000 most variable CpGs
+5. **Outlier detection**: Identified 3 sample outliers via PCA (retained for analysis)
 
 ### 2.3 Feature Engineering
 
-#### 2.3.1 Variance-Based Selection
+#### 2.3.1 Feature Types
 
-The 500 CpG sites with highest variance across samples were selected as informative features. High-variance sites are more likely to capture meaningful biological variation between groups.
+| Feature Type | Count | Description |
+|-------------|-------|-------------|
+| Top variance CpGs | 500 | Most variable sites |
+| PCA components | 20 | Global methylation patterns |
+| Association features | 200 | Sites associated with AUD status |
+| Epigenetic ages | 3 | Clock age accelerations |
 
-#### 2.3.2 Principal Component Analysis
+#### 2.3.2 Epigenetic Age Calculation
 
-Principal component analysis (PCA) was applied to the full methylation matrix, and the first 20 components were retained. These components capture global patterns of methylation variation, with the first components often reflecting technical factors (batch effects, cell composition) and later components capturing biological signal.
-
-#### 2.3.3 Association-Based Selection
-
-Using F-statistics from ANOVA, 200 CpG sites with the strongest univariate association with alcohol status were identified. This supervised feature selection identifies CpGs directly relevant to the prediction task.
-
-#### 2.3.4 Pathway Aggregation
-
-CpG sites were aggregated by gene pathway to create biologically interpretable features:
-- Alcohol metabolism: ADH1A/B/C, ALDH1A1/2, CYP2E1
-- Immune response: IL6, IL1B, TNF, NFKB1, TLR4
-- Liver function: CYP1A2, CYP2D6, CYP3A4
-- Oxidative stress: SOD1/2, CAT, GPX1
-- DNA repair: PARP1, XRCC1, OGG1
-
-#### 2.3.5 Epigenetic Age Features
-
-Epigenetic ages were calculated using simplified clock models, and three age acceleration metrics (residualized on chronological age) were added as features.
+Epigenetic ages were calculated using simplified clock models. Age acceleration was computed as the residual from regressing epigenetic age on chronological age.
 
 ### 2.4 Model Development
 
-#### 2.4.1 Baseline Models
+#### 2.4.1 Elastic Net Logistic Regression
 
-Three baseline models were implemented for comparison:
+- Regularization: Combined L1 and L2 penalties (l1_ratio=0.5)
+- Hyperparameter tuning: 5-fold cross-validation
+- Handles high-dimensional data where features > samples
 
-**Elastic Net Logistic Regression**: Regularized logistic regression with combined L1 and L2 penalties (l1_ratio=0.5). Regularization strength was selected via 5-fold cross-validation.
+#### 2.4.2 Random Forest
 
-**Random Forest**: Ensemble of 100 decision trees with minimum samples per split of 5 and square root of features considered at each split.
+- Ensemble of 100 decision trees
+- Maximum features: sqrt(n_features)
+- Minimum samples per split: 5
 
-**XGBoost**: Gradient boosting with 100 trees, maximum depth of 5, learning rate of 0.1, and subsample/colsample_bytree of 0.8.
+#### 2.4.3 EpiAlcNet Deep Learning Architecture
 
-#### 2.4.2 EpiAlcNet Architecture
+A novel multi-pathway architecture designed for methylation data:
 
-We developed a novel multi-pathway deep learning architecture specifically designed for methylation-based prediction. The architecture consists of five main components:
+```
+INPUT: CpG Sites + Covariates + Epigenetic Ages
+           │
+    ┌──────┴──────┬──────────────┐
+    │             │              │
+ ATTENTION    MULTI-SCALE    BiLSTM
+  PATHWAY       CNN         TEMPORAL
+    │             │              │
+    └──────┬──────┴──────────────┘
+           │
+      FUSION MODULE
+           │
+     OUTPUT: AUD Probability
+```
 
-**Pathway 1: Self-Attention Module**
-- Maps input features to 64-dimensional hidden space
-- Multi-head self-attention (4 heads) learns which CpG sites are most informative
-- Layer normalization and residual connections for stable training
+**Key Components:**
+- Self-attention module learns CpG importance
+- Multi-scale CNN (k=3,7,15) captures local patterns
+- Bidirectional LSTM captures sequential dependencies
 
-**Pathway 2: Multi-Scale CNN**
-- Three parallel 1D convolutions with kernel sizes 3, 7, and 15
-- Captures local patterns at different scales
-- Batch normalization and ReLU activation
-- Global max pooling aggregates across the sequence
-
-**Pathway 3: Bidirectional LSTM**
-- Input chunked into sequences of 100 CpGs
-- 2-layer BiLSTM with 64 hidden units per direction
-- Attention pooling for sequence aggregation
-
-**Fusion Module**
-- Concatenates outputs from all three pathways
-- Adds encoded covariate features (32-dimensional)
-- Adds encoded age acceleration features (16-dimensional)
-- Two dense layers (256 → 128) with batch normalization and dropout
-
-**Prediction Head**
-- Dense layers (128 → 64 → 2)
-- Softmax output for binary classification
-
-**Training Details**:
-- Optimizer: AdamW with learning rate 1e-3, weight decay 1e-4
+**Training:**
+- Optimizer: Adam (lr=0.001)
 - Batch size: 32
 - Early stopping: Patience of 10 epochs
-- Dropout rate: 0.3
 
 ### 2.5 Evaluation
 
-#### 2.5.1 Train-Test Split
+#### 2.5.1 Data Split
+- 80% training, 20% test
+- Stratified by AUD status
 
-Data was split 80/20 into training and test sets with stratification by alcohol status.
+#### 2.5.2 Metrics
+- Primary: Area Under ROC Curve (AUC)
+- Secondary: Accuracy, Precision, Recall, F1, Sensitivity, Specificity
+- 95% confidence intervals via bootstrap (1000 iterations)
 
-#### 2.5.2 Cross-Validation
-
-5-fold stratified cross-validation was performed on the training set for hyperparameter tuning and model selection.
-
-#### 2.5.3 Performance Metrics
-
-Primary outcome measures included:
-- Area Under the ROC Curve (AUC)
-- Accuracy
-- Precision, Recall, F1 Score
-- Sensitivity and Specificity
-
-Bootstrap resampling (1000 iterations) was used to compute 95% confidence intervals for AUC.
-
-#### 2.5.4 Statistical Analysis
-
-Age acceleration was compared between groups using:
+#### 2.5.3 Statistical Analysis for Age Acceleration
 - Independent samples t-test
-- Mann-Whitney U test (non-parametric)
+- Mann-Whitney U test
 - Cohen's d effect size
-
-Multiple testing correction was applied using the Benjamini-Hochberg procedure to control false discovery rate.
 
 ---
 
@@ -239,83 +168,59 @@ Multiple testing correction was applied using the Benjamini-Hochberg procedure t
 
 ### 3.1 Dataset Characteristics
 
-The generated dataset included 800 samples with 400 cases (alcohol exposure) and 400 controls. Key characteristics are summarized in Table 1.
+The final dataset included 48 samples after quality control, with relatively balanced groups (23 AUD cases, 25 controls).
 
-**Table 1: Sample Characteristics**
+### 3.2 Model Performance
 
-| Variable | Control (n=400) | Alcohol (n=400) | p-value |
-|----------|-----------------|-----------------|---------|
-| Age (years) | 47.3 ± 14.2 | 49.1 ± 13.8 | 0.08 |
-| Male (%) | 50.2% | 59.8% | 0.01 |
-| Smoking (%) | 14.8% | 49.5% | <0.001 |
-| BMI | 24.9 ± 3.8 | 27.1 ± 4.2 | <0.001 |
-| PRS | -0.12 ± 0.95 | 0.18 ± 1.03 | <0.001 |
+All models achieved strong discrimination between AUD cases and controls.
 
-As expected, the alcohol group showed higher rates of smoking and elevated polygenic risk scores.
+**Table 1: Model Performance on GSE49393 (n=48)**
 
-### 3.2 Epigenetic Age Acceleration
+| Model | AUC | 95% CI | Accuracy | Precision | Recall | F1 |
+|-------|-----|--------|----------|-----------|--------|-----|
+| **Elastic Net** | **0.96** | 0.81–1.00 | 90% | 100% | 80% | 0.89 |
+| Random Forest | 0.88 | 0.56–1.00 | 90% | 100% | 80% | 0.89 |
+| EpiAlcNet | 0.84 | 0.43–1.00 | 70% | 100% | 40% | 0.57 |
 
-Epigenetic age acceleration differed significantly between groups for all three clocks (Table 2, Figure 1).
+Elastic Net achieved the highest AUC of 0.96, demonstrating that DNA methylation patterns in the prefrontal cortex robustly distinguish individuals with AUD from controls.
+
+The simpler linear model (Elastic Net) outperformed the deep learning approach, which is expected given the small sample size (n=48). Neural networks typically require larger training sets to effectively learn complex patterns.
+
+### 3.3 Epigenetic Age Acceleration
 
 **Table 2: Age Acceleration by Group**
 
-| Clock | Control | Alcohol | Difference | Cohen's d | p-value |
-|-------|---------|---------|------------|-----------|---------|
-| Horvath | -0.06 ± 1.82 | +1.14 ± 1.95 | +1.20 years | 0.64 | 0.012 |
-| PhenoAge | -0.11 ± 2.15 | +2.19 ± 2.41 | +2.30 years | 0.95 | <0.001 |
-| GrimAge | -0.15 ± 2.53 | +2.95 ± 2.88 | +3.10 years | 1.14 | <0.001 |
+| Clock | Controls (n=25) | AUD Cases (n=23) | Difference | Cohen's d | p-value |
+|-------|-----------------|------------------|------------|-----------|---------|
+| Horvath | +0.08 ± 1.01 | -0.09 ± 1.12 | -0.17 years | -0.16 | 0.60 |
+| PhenoAge | -0.27 ± 2.47 | +0.29 ± 2.18 | **+0.57 years** | 0.24 | 0.42 |
+| GrimAge | +0.09 ± 3.37 | -0.10 ± 2.44 | -0.20 years | -0.07 | 0.82 |
 
-The effect was largest for GrimAge (d=1.14, large effect), followed by PhenoAge (d=0.95, large effect) and Horvath (d=0.64, medium effect). These results are consistent with published literature suggesting that GrimAge is most sensitive to alcohol-related health impacts.
+Age acceleration differences were not statistically significant with this sample size. However, PhenoAge showed the expected trend, with AUD cases showing +0.57 years of acceleration relative to controls.
 
-### 3.3 Model Performance
-
-All models achieved above-chance prediction of alcohol status, with EpiAlcNet showing the best overall performance (Table 3).
-
-**Table 3: Model Performance Comparison**
-
-| Model | AUC (95% CI) | Accuracy | Precision | Recall | F1 |
-|-------|--------------|----------|-----------|--------|-----|
-| Elastic Net | 0.802 (0.754-0.847) | 0.738 | 0.726 | 0.762 | 0.744 |
-| Random Forest | 0.785 (0.732-0.834) | 0.712 | 0.698 | 0.738 | 0.717 |
-| XGBoost | 0.812 (0.763-0.857) | 0.756 | 0.744 | 0.775 | 0.759 |
-| **EpiAlcNet** | **0.854 (0.811-0.891)** | **0.788** | **0.781** | **0.800** | **0.790** |
-
-EpiAlcNet achieved an AUC of 0.854, representing a 4.2 percentage point improvement over the best baseline model (XGBoost, AUC=0.812). The improvement was statistically significant (bootstrap test, p=0.031).
+The lack of statistical significance is likely due to:
+1. Small sample size (n=48) providing limited statistical power
+2. Brain tissue may show different patterns than blood (most published studies used blood)
+3. Postmortem changes may introduce additional variability
 
 ### 3.4 Feature Importance
 
-Analysis of Elastic Net coefficients revealed the top predictive CpG sites (Table 4). Several identified sites corresponded to genes involved in alcohol metabolism and immune function.
+**Table 3: Top 10 Predictive Features**
 
-**Table 4: Top 10 Important Features**
+| Rank | Feature | Importance | Type |
+|------|---------|------------|------|
+| 1 | PC18 | 8.56% | Principal Component |
+| 2 | cg20034712 | 6.88% | Association-based |
+| 3 | cg10526376 | 5.52% | Variance-based |
+| 4 | cg05029148 | 4.88% | Association-based |
+| 5 | cg19149522 | 4.27% | Association-based |
+| 6 | cg03794530 | 4.05% | Association-based |
+| 7 | cg17319011 | 3.91% | Association-based |
+| 8 | cg04495110 | 3.63% | Association-based |
+| 9 | cg18661413 | 3.55% | Association-based |
+| 10 | cg22022881 | 3.17% | Association-based |
 
-| Rank | Feature | Importance | Gene/Category |
-|------|---------|------------|---------------|
-| 1 | var_cg00045231 | 0.0892 | Alcohol-associated |
-| 2 | PC1 | 0.0754 | Principal component |
-| 3 | var_cg00012847 | 0.0681 | Alcohol-associated |
-| 4 | age_accel_grimage | 0.0623 | GrimAge acceleration |
-| 5 | smoking_status | 0.0589 | Covariate |
-| 6 | assoc_cg00098412 | 0.0542 | Association-selected |
-| 7 | age_accel_phenoage | 0.0498 | PhenoAge acceleration |
-| 8 | genetic_risk_score | 0.0456 | Polygenic risk |
-| 9 | var_cg00034125 | 0.0421 | Alcohol-associated |
-| 10 | pathway_alcohol_metabolism | 0.0398 | Pathway aggregate |
-
-Notably, age acceleration features (GrimAge, PhenoAge) ranked among the top predictors, supporting the hypothesis that biological aging contributes to the alcohol methylation signature.
-
-### 3.5 Contribution of Age Acceleration Features
-
-To assess the added value of epigenetic age features, we compared models with and without age acceleration inputs (Table 5).
-
-**Table 5: Impact of Age Acceleration Features**
-
-| Model | Without Age Accel | With Age Accel | Improvement |
-|-------|-------------------|----------------|-------------|
-| Elastic Net | 0.785 | 0.802 | +0.017 |
-| XGBoost | 0.796 | 0.812 | +0.016 |
-| EpiAlcNet | 0.832 | 0.854 | +0.022 |
-
-Including age acceleration features improved AUC by 1.6-2.2 percentage points across models, confirming that epigenetic aging provides additional predictive signal beyond individual CpG sites.
+Principal components and association-based CpG sites dominated the feature importance rankings, indicating that the predictive signal is distributed across the methylome rather than concentrated in a few sites.
 
 ---
 
@@ -323,202 +228,113 @@ Including age acceleration features improved AUC by 1.6-2.2 percentage points ac
 
 ### 4.1 Summary of Findings
 
-This study demonstrates that DNA methylation patterns can be leveraged to predict alcohol use with high accuracy and that deep learning architectures specifically designed for this task outperform traditional methods. Our novel EpiAlcNet architecture achieved an AUC of 0.854, substantially higher than baseline models, while also revealing the strong association between alcohol exposure and accelerated biological aging.
+This study demonstrates that DNA methylation patterns in postmortem prefrontal cortex tissue can effectively distinguish individuals with alcohol use disorder from controls. Using real human data from GSE49393, Elastic Net regression achieved an outstanding AUC of 0.96, confirming the presence of robust, machine-detectable epigenetic signatures of AUD.
 
-### 4.2 Biological Interpretation
+### 4.2 Comparison to Previous Work
 
-The success of methylation-based prediction reflects the biological impact of chronic alcohol exposure on the epigenome. Several mechanisms likely contribute:
+Our results are stronger than those typically reported in blood-based studies, which generally achieve AUC values of 0.70–0.85. This may reflect:
 
-**Direct metabolic effects**: Alcohol metabolism by alcohol dehydrogenase (ADH) and aldehyde dehydrogenase (ALDH) generates acetaldehyde, which can directly adduct to DNA and proteins, triggering DNA damage responses and altering methylation machinery.
+1. **Tissue relevance**: Brain tissue is directly affected by alcohol and may show stronger methylation differences than peripheral blood
+2. **Case definition**: GSE49393 includes individuals with clinically diagnosed AUD, which may show more pronounced epigenetic changes than general population studies of alcohol consumption
+3. **Postmortem tissue**: May capture cumulative lifetime exposure better than living tissue samples
 
-**One-carbon metabolism disruption**: Alcohol interferes with folate absorption and recycling, depleting S-adenosylmethionine (SAM), the universal methyl donor for DNA methylation.
+### 4.3 Model Selection
 
-**Inflammatory responses**: Chronic alcohol consumption promotes systemic inflammation, which activates immune cells and alters their methylation profiles. Our finding that immune-related genes were overrepresented among top predictors supports this mechanism.
+The Elastic Net model outperformed Random Forest and deep learning (EpiAlcNet), which is instructive:
 
-**Accelerated aging**: The robust association between alcohol and age acceleration, particularly for GrimAge, suggests that alcohol exposure accelerates biological aging processes that leave lasting epigenetic marks.
+- **Small sample sizes favor simpler models**: With n=48, regularized linear models can effectively identify predictive CpGs without overfitting
+- **High feature-to-sample ratio**: With 50,000+ features and only 48 samples, L1 regularization provides essential feature selection
+- **Deep learning requires more data**: EpiAlcNet would likely show advantages with sample sizes of 200+
 
-### 4.3 Methodological Contributions
+### 4.4 Age Acceleration
 
-Our study makes several methodological contributions to the field:
+While we observed the expected trend of accelerated aging in AUD cases (PhenoAge +0.57 years), effects were not statistically significant. This contrasts with previous blood-based studies reporting 2-5 years of acceleration. Possible explanations include:
 
-**Novel architecture**: EpiAlcNet represents the first multi-pathway deep learning architecture specifically designed for methylation-based alcohol prediction. The combination of attention mechanisms, multi-scale convolutions, and sequential processing captures different aspects of the methylation signal that individual approaches miss.
+1. **Power limitations**: Our sample size was insufficient to detect small-to-medium effects
+2. **Tissue differences**: Brain tissue may show different aging patterns than blood
+3. **Postmortem artifacts**: Postmortem interval and tissue handling may affect epigenetic age estimates
 
-**Integration of aging biomarkers**: By directly incorporating epigenetic age acceleration into the model, we demonstrate that biological aging provides predictive value beyond individual CpG effects.
+### 4.5 Clinical Implications
 
-**Comprehensive feature engineering**: Our pipeline combines variance-based selection, PCA, association analysis, and pathway aggregation to create a rich feature representation.
+If validated in larger cohorts, brain methylation biomarkers could support:
 
-### 4.4 Clinical and Research Implications
+- **Postmortem diagnosis**: Objective evidence of AUD in forensic contexts
+- **Neuropathological research**: Understanding how alcohol affects brain epigenetics
+- **Drug development**: Identifying therapeutic targets in brain pathways
 
-**Biomarker development**: Methylation-based markers could complement self-reported alcohol intake, providing objective biological evidence of exposure. This has potential applications in clinical trials, epidemiological studies, and personalized medicine.
+### 4.6 Limitations
 
-**Risk stratification**: The association with accelerated aging suggests that methylation markers could identify individuals experiencing adverse health effects from alcohol, even before clinical disease manifests.
-
-**Therapeutic monitoring**: Changes in methylation over time could potentially serve as biomarkers of treatment response or abstinence.
-
-### 4.5 Limitations
-
-Several limitations should be acknowledged:
-
-**Synthetic data**: While our synthetic dataset was designed to capture realistic statistical properties, validation on real data is essential before clinical application.
-
-**Cross-sectional design**: The simulated associations are cross-sectional and do not establish causality. Longitudinal studies are needed to determine whether methylation changes precede or follow alcohol use.
-
-**Tissue specificity**: Blood methylation may not fully reflect brain methylation patterns that are most relevant to addiction biology.
-
-**Confounding**: Despite adjusting for smoking and other covariates, residual confounding cannot be excluded. The methylation signature could partly reflect lifestyle factors correlated with alcohol use.
-
-### 4.6 Ethical Considerations
-
-The development of biological predictors for substance use raises important ethical concerns:
-
-**Privacy**: Methylation data is sensitive biological information that could potentially reveal health status, ancestry, and behavioral history.
-
-**Discrimination**: Risk scores could be misused for insurance underwriting, employment decisions, or criminal justice applications.
-
-**Stigmatization**: Labeling individuals as "at-risk" based on biological markers could perpetuate stigma around alcohol use disorder.
-
-**Equity**: If predictive models are trained on limited populations, they may perform poorly or unfairly for underrepresented groups.
-
-We strongly advocate that methylation-based predictors be used only for research and voluntary clinical applications, with appropriate informed consent, privacy protections, and transparent communication of uncertainty.
+1. **Sample size**: n=48 is small for machine learning, limiting generalization
+2. **Postmortem tissue**: Results may not generalize to living individuals
+3. **Single dataset**: External validation in independent cohorts needed
+4. **Confounding**: Smoking, medication use, and cause of death may influence results
+5. **Ancestry**: Dataset composition may affect generalizability
 
 ### 4.7 Future Directions
 
-Future research should:
-1. Validate findings in independent cohorts with measured methylation data
-2. Conduct longitudinal studies to establish temporality
-3. Explore tissue-specific methylation in brain samples where available
-4. Develop interpretable deep learning methods to identify novel biological insights
-5. Investigate whether methylation biomarkers can predict treatment response
+1. Validate in larger brain tissue cohorts
+2. Compare brain and blood methylation from same individuals
+3. Conduct longitudinal studies with living participants
+4. Apply to additional brain regions (hippocampus, striatum)
 
 ---
 
 ## 5. Conclusion
 
-This study demonstrates that DNA methylation contains robust, predictive signatures of alcohol use that can be leveraged by machine learning. Our novel EpiAlcNet architecture, combining attention mechanisms, multi-scale convolutions, and sequential processing with epigenetic age features, achieved state-of-the-art performance (AUC=0.854). Furthermore, we confirmed that alcohol exposure is associated with accelerated biological aging, with effects of 1.2-3.1 years depending on the clock used. These findings advance our understanding of how alcohol affects the epigenome and provide a foundation for developing objective biomarkers of alcohol exposure. With appropriate validation and ethical safeguards, such biomarkers could ultimately support clinical care and public health efforts to reduce alcohol-related harms.
+This study demonstrates that DNA methylation in the prefrontal cortex contains robust, machine-detectable signatures of alcohol use disorder. Analyzing real human data from GSE49393, our Elastic Net model achieved an AUC of 0.96, providing strong evidence that epigenetic patterns can objectively identify individuals with AUD. While epigenetic age acceleration showed expected trends (+0.57 years in cases for PhenoAge), larger samples would be needed to achieve statistical significance.
+
+These findings—validated on real biological data—advance our understanding of alcohol's molecular footprint in the brain and provide a foundation for developing objective biomarkers of alcohol exposure. Future validation in larger, independent cohorts will be essential to establish clinical utility.
 
 ---
 
 ## 6. References
 
-1. Bernabeu, E., et al. (2021). Blood-based epigenome-wide association study and prediction of alcohol consumption. *Clinical Epigenetics*, 13(1), 1-14.
+1. Zhang, H., et al. (2014). Differentially co-expressed genes in postmortem prefrontal cortex of individuals with alcohol use disorders: Influence on alcohol metabolism-related pathways. *Human Genetics*, 133(11), 1383-1394.
 
-2. Chen, T., & Guestrin, C. (2016). XGBoost: A scalable tree boosting system. In *Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining* (pp. 785-794).
+2. Liu, C., et al. (2018). A DNA methylation biomarker of alcohol consumption. *Molecular Psychiatry*, 23(2), 422-433.
 
-3. Horvath, S. (2013). DNA methylation age of human tissues and cell types. *Genome Biology*, 14(10), R115.
+3. Lohoff, F. W., et al. (2018). Epigenome-wide association study of alcohol consumption in N=6,604 clinically defined bipolar disorder subjects. *Molecular Psychiatry*, 23(11), 2221-2228.
 
-4. Horvath, S., & Raj, K. (2018). DNA methylation-based biomarkers and the epigenetic clock theory of ageing. *Nature Reviews Genetics*, 19(6), 371-384.
+4. Horvath, S. (2013). DNA methylation age of human tissues and cell types. *Genome Biology*, 14(10), R115.
 
 5. Levine, M. E., et al. (2018). An epigenetic biomarker of aging for lifespan and healthspan. *Aging*, 10(4), 573-591.
 
-6. Liang, Y., et al. (2019). DNA methylation signature on phosphatidylethanol, not self-reported alcohol use, predicts hazardous alcohol consumption in two distinct populations. *Molecular Psychiatry*, 24(9), 1357-1369.
+6. Lu, A. T., et al. (2019). DNA methylation GrimAge strongly predicts lifespan and healthspan. *Aging*, 11(2), 303-327.
 
-7. Liu, C., et al. (2018). A DNA methylation biomarker of alcohol consumption. *Molecular Psychiatry*, 23(2), 422-433.
+7. Rosen, A. D., et al. (2018). DNA methylation age is accelerated in alcohol dependence. *Translational Psychiatry*, 8(1), 182.
 
-8. Lohoff, F. W., et al. (2018). Epigenome-wide association study of alcohol consumption in N=6,604 clinically defined bipolar disorder subjects. *Molecular Psychiatry*, 23(11), 2221-2228.
-
-9. Lu, A. T., et al. (2019). DNA methylation GrimAge strongly predicts lifespan and healthspan. *Aging*, 11(2), 303-327.
-
-10. McCartney, D. L., et al. (2018). Epigenetic prediction of complex traits and death. *Genome Biology*, 19(1), 136.
-
-11. Pidsley, R., et al. (2016). Critical evaluation of the Illumina MethylationEPIC BeadChip microarray for whole-genome DNA methylation profiling. *Genome Biology*, 17(1), 208.
-
-12. Rosen, A. D., et al. (2018). DNA methylation age is accelerated in alcohol dependence. *Translational Psychiatry*, 8(1), 182.
-
-13. Vaswani, A., et al. (2017). Attention is all you need. In *Advances in Neural Information Processing Systems* (pp. 5998-6008).
-
-14. Zhang, H., & Gelernter, J. (2017). Review: DNA methylation and alcohol use disorders: progress and challenges. *American Journal of Addiction*, 26(5), 502-515.
-
-15. Zou, H., & Hastie, T. (2005). Regularization and variable selection via the elastic net. *Journal of the Royal Statistical Society: Series B*, 67(2), 301-320.
+8. Bernabeu, E., et al. (2021). Blood-based epigenome-wide association study and prediction of alcohol consumption. *Clinical Epigenetics*, 13(1), 1-14.
 
 ---
 
-## 7. Appendices
+## 7. Appendix
 
-### Appendix A: Complete Model Architecture
+### Appendix A: Data Availability
 
+The GSE49393 dataset is publicly available from the Gene Expression Omnibus:
+https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE49393
+
+### Appendix B: Code Availability
+
+All analysis code is available at:
+https://github.com/IshaanAyaan/deep-learning-alcohol-epigenetics
+
+### Appendix C: Running the Analysis
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Run with real GEO data
+python3 main.py --data-source geo --geo-id GSE49393 --output-dir outputs_real
 ```
-EpiAlcNet(
-  (attention_pathway): Sequential(
-    (0): Linear(500 → 64)
-    (1): ReLU()
-    (2): Dropout(p=0.3)
-    (3): CpGAttentionBlock(
-      (query): Linear(64 → 64)
-      (key): Linear(64 → 64)
-      (value): Linear(64 → 64)
-      (layer_norm): LayerNorm((64,))
-    )
-  )
-  (cnn_pathway): MultiScaleCNNBlock(
-    (conv_k3): Conv1d(1,32, k=3, pad=1) + BN + ReLU
-    (conv_k7): Conv1d(1,32, k=7, pad=3) + BN + ReLU
-    (conv_k15): Conv1d(1,32, k=15, pad=7) + BN + ReLU
-  )
-  (lstm_pathway): BiLSTMBlock(
-    (lstm): LSTM(100 → 64, bidirectional=True, layers=2)
-    (attention): Linear(128 → 1)
-  )
-  (covariate_encoder): Sequential(
-    Linear(5 → 32) + ReLU + Dropout + Linear(32 → 32) + ReLU
-  )
-  (age_encoder): Sequential(
-    Linear(3 → 16) + ReLU + Dropout + Linear(16 → 16) + ReLU
-  )
-  (fusion): Sequential(
-    Linear(292 → 256) + BN + ReLU + Dropout
-    Linear(256 → 128) + BN + ReLU + Dropout
-  )
-  (classifier): Sequential(
-    Linear(128 → 64) + ReLU + Dropout
-    Linear(64 → 2)
-  )
-)
-
-Total parameters: ~185,000
-```
-
-### Appendix B: Cross-Validation Results
-
-**Table B1: 5-Fold Cross-Validation Performance**
-
-| Fold | Elastic Net AUC | Random Forest AUC | XGBoost AUC | EpiAlcNet AUC |
-|------|-----------------|-------------------|-------------|---------------|
-| 1 | 0.793 | 0.774 | 0.805 | 0.841 |
-| 2 | 0.812 | 0.798 | 0.821 | 0.869 |
-| 3 | 0.799 | 0.781 | 0.809 | 0.852 |
-| 4 | 0.808 | 0.786 | 0.816 | 0.861 |
-| 5 | 0.801 | 0.789 | 0.811 | 0.847 |
-| **Mean** | **0.803** | **0.786** | **0.812** | **0.854** |
-| **SD** | 0.007 | 0.009 | 0.006 | 0.011 |
-
-### Appendix C: Sensitivity Analyses
-
-**Impact of Sample Size**
-
-| n | Elastic Net AUC | EpiAlcNet AUC |
-|---|-----------------|---------------|
-| 200 | 0.756 | 0.791 |
-| 400 | 0.781 | 0.823 |
-| 600 | 0.795 | 0.845 |
-| 800 | 0.802 | 0.854 |
-
-**Impact of Effect Size Simulation**
-
-| Effect Size Multiplier | Mean AUC |
-|-----------------------|----------|
-| 0.5x | 0.712 |
-| 1.0x (baseline) | 0.802 |
-| 1.5x | 0.861 |
-| 2.0x | 0.903 |
 
 ---
 
 ## Acknowledgments
 
-This research was conducted as part of a high school genetics course project. I thank Mrs. Hagerman for guidance on the genetics aspects of epigenetics and DNA methylation.
+This research was conducted as part of a high school genetics course project for ISEF 2026. I thank Mrs. Hagerman for guidance on genetics and epigenetics.
 
 ---
 
-**Word Count:** Approximately 5,000 words (excluding references, tables, and appendices)
-
-**Page Count:** 11+ pages
+**Word Count:** Approximately 3,500 words (excluding references and appendices)
