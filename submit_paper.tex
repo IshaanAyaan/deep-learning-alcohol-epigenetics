@@ -41,11 +41,11 @@
     \vspace*{2in}
     
     {\LARGE \textbf{Can Your DNA Tell if You've Been Drinking?}}\\[0.5cm]
-    {\Large Using Machine Learning to Read Alcohol's Fingerprints in Your Genes}\\[2cm]
+    {\Large Using Machine Learning to Read Alcohol's Epigenetics in Your Genes}\\[2cm]
     
     {\large Ishaan Ranjan}\\[0.5cm]
-    Genetics with Mrs. Hagerman\\[0.5cm]
-    January 26, 2026\\[2cm]
+    Genetics || Mrs. Hagerman\\[0.5cm]
+    January 23, 2026\\[2cm]
     
 \end{center}
 
@@ -56,84 +56,85 @@
 % ============================================
 \section*{Abstract}
 
-What if a simple blood test could reveal your drinking history---not because you told anyone, but because alcohol leaves permanent ``sticky notes'' on your DNA? This study explores exactly that. We built a computer system called EpiAlcNet that reads these molecular sticky notes (technically called DNA methylation) to predict whether someone drinks alcohol. Think of it like training a detective to spot clues that alcohol leaves behind in your cells. Our system achieved 85\% accuracy---meaning it correctly identified drinkers and non-drinkers most of the time---outperforming older methods by a solid margin. Even more interesting? We found that alcohol makes your cells ``age'' faster than they should. Regular drinkers showed biological ages up to 3 years older than their actual birthday would suggest. It's like alcohol is hitting the fast-forward button on your cellular clock. These findings could eventually help doctors identify at-risk patients before problems become serious, all from a routine blood draw.
+What if a simple blood test could reveal your drinking history because alcohol leaves permanent ``sticky notes'' on your DNA? This study explores exactly that using real human brain tissue data. I analyzed DNA methylation patterns from 48 postmortem brain samples and built machine learning models to predict whether someone had alcohol use disorder. Think of it like training a detective to spot clues that alcohol leaves behind in your cells. The best performing model achieved 96\% accuracy (AUC) at distinguishing people with alcohol problems from healthy controls. That's remarkably high for biological data. I also looked for signs that alcohol makes your cells ``age'' faster than they should. The data showed a trend in that direction with drinkers appearing about half a year older biologically but the effect wasn't statistically significant with only 48 samples. These findings suggest that DNA methylation could eventually help doctors objectively assess alcohol exposure without relying on self-reports.
 
 \textbf{Keywords:} DNA methylation, epigenetics, alcohol, machine learning, biological aging, epigenetic clocks
 
-\newpage
+
 
 % ============================================
 % INTRODUCTION
 % ============================================
 \section{Introduction}
 
-Here's a problem: when doctors ask ``how much do you drink?''---people lie. Not always on purpose! Maybe you forgot about those weekend beers, or that wine at dinner didn't seem worth mentioning. Studies show people underreport their alcohol consumption by about 40-60\% (Bernabeu et al. 2021). That's a huge gap when doctors are trying to assess your health.
+The problem is when doctors ask ``how much do you drink?'' most people fudge the numbers. Not always on purpose! Maybe you forgot about those weekend beers or that wine at dinner didn't seem worth mentioning. Studies show people underreport their alcohol consumption by about 40-60\% (Bernabeu et al. 2021). That's a huge gap when doctors are trying to assess your health.
 
-But what if your own cells kept a diary of your drinking? Turns out, they do---kind of. Every time you drink alcohol, it triggers chemical changes in your DNA through a process called epigenetics. Imagine your DNA as a massive recipe book. Epigenetics doesn't change the recipes themselves; instead, it adds sticky notes saying ``make this one more often'' or ``skip this recipe entirely.'' These sticky notes are actually methyl groups---tiny chemical tags attached to your DNA. And crucially, certain drinking patterns leave recognizable patterns of these tags that stick around for years (Liu et al. 2018).
+But what if your own cells kept a diary of your drinking? Turns out they do. At least kind of. Every time you drink alcohol it triggers chemical changes in your DNA through a process called epigenetics. Imagine your DNA as a massive recipe book. Epigenetics doesn't change the recipes themselves. Instead it adds sticky notes saying ``make this one more often'' or ``skip this recipe entirely.'' These sticky notes are actually methyl groups which are tiny chemical tags attached to your DNA. And crucially certain drinking patterns leave recognizable patterns of these tags that stick around for years (Liu et al. 2018).
 
-This study asks: can we teach a computer to read these molecular sticky notes and figure out who drinks? Spoiler alert: yes, we can, and it works surprisingly well.
+This study tackles the question of whether we can teach a computer to read these molecular sticky notes and figure out who has alcohol use disorder. Spoiler alert. Yes we can and it works surprisingly well.
 
-\newpage
+
 
 % ============================================
 % BACKGROUND / LITERATURE REVIEW
 % ============================================
-\section{Background: What the Scientists Already Discovered}
+\section{Background}
 
 \subsection{The Alcohol-DNA Connection}
 
-Multiple research teams have found that alcohol literally rewrites parts of your genetic instruction manual. Liu and colleagues (2018) analyzed over 9,600 people and identified 144 specific spots on DNA where alcohol leaves its mark---like a molecular signature (Liu et al. 2018). These spots weren't random; they clustered around genes controlling your immune system and how your body processes fats. It's as if alcohol has favorite places to leave its sticky notes.
+Multiple research teams have found that alcohol literally rewrites parts of your genetic instruction manual. Liu and colleagues (2018) analyzed over 9,600 people and identified 144 specific spots on DNA where alcohol leaves its mark. Think of it like a molecular signature. These spots weren't random. They clustered around genes controlling your immune system and how your body processes fats. It's as if alcohol has favorite places to leave its sticky notes.
 
-Lohoff's team (2018) went deeper, finding 96 methylation changes specifically in people with alcohol use disorder. Many of these targeted brain signaling genes, which might explain why addiction literally changes how the brain works (Lohoff et al. 2018).
+Lohoff's team (2018) went deeper and found 96 methylation changes specifically in people with alcohol use disorder. Many of these targeted brain signaling genes which might explain why addiction literally changes how the brain works (Lohoff et al. 2018).
 
 \subsection{Your Cells Have a Birthday Clock}
 
-Here's where it gets fascinating. Scientists discovered that DNA methylation patterns can predict someone's age---usually within about 3-4 years (Horvath 2013). Horvath created the first ``epigenetic clock'' in 2013, and it was revolutionary. But the really useful clocks came later. The PhenoAge clock (Levine et al. 2018) predicts not just your age, but your \textit{health} age---how old your body acts. And GrimAge (Lu et al. 2019) can actually predict when you're likely to die. Morbid? Yes. Useful? Incredibly.
+Here's where it gets fascinating. Scientists discovered that DNA methylation patterns can predict someone's age usually within about 3-4 years (Horvath 2013). Horvath created the first ``epigenetic clock'' in 2013 and it was revolutionary. But the really useful clocks came later. The PhenoAge clock (Levine et al. 2018) predicts not just your age but your \textit{health} age. How old your body acts. And GrimAge (Lu et al. 2019) can actually predict when you're likely to die. Morbid? Yes. Useful? Incredibly.
 
-Multiple studies found something alarming: heavy drinkers consistently show ``age acceleration''---their epigenetic clocks run fast. Rosen and colleagues (2018) found alcohol-dependent individuals were biologically 1-2 years older than their chronological age (Rosen et al. 2018). It's like alcohol is stealing birthdays from the future.
+Multiple studies found something alarming. Heavy drinkers consistently show ``age acceleration'' meaning their epigenetic clocks run fast. Rosen and colleagues (2018) found alcohol-dependent individuals were biologically 1-2 years older than their chronological age (Rosen et al. 2018). It's like alcohol is stealing birthdays from the future.
 
 \subsection{Machine Learning Enters the Chat}
 
-Previous studies mostly used simple statistical methods to analyze this data. But methylation data is absolutely massive---over 850,000 data points per person. That's where machine learning shines. Traditional methods might miss complex patterns, but deep learning can find hidden relationships that humans would never spot (Bernabeu et al. 2021). Think of it like the difference between manually searching through a library versus having a really smart search engine.
+Previous studies mostly used simple statistical methods to analyze this data. But methylation data is absolutely massive with over 850,000 data points per person. That's where machine learning shines. Traditional methods might miss complex patterns but deep learning can find hidden relationships that humans would never spot (Bernabeu et al. 2021). Think of it like the difference between manually searching through a library versus having a really smart search engine.
 
-\newpage
+
 
 % ============================================
 % METHODOLOGY AND DATA
 % ============================================
 \section{Methodology and Data}
 
-\subsection{Data Source: Real Brain Methylation Data}
+\subsection{Data Source}
 
-This study uses real DNA methylation data from the Gene Expression Omnibus (GEO), specifically dataset GSE49393 (Zhang et al., 2013). This dataset contains methylation profiles from postmortem prefrontal cortex tissue of 48 individuals:
+This study uses real DNA methylation data from the Gene Expression Omnibus (GEO). Specifically dataset GSE49393 published by Zhang and colleagues in 2013. This dataset contains methylation profiles from postmortem prefrontal cortex tissue of 48 individuals.
+
 \begin{itemize}
-    \item \textbf{23 cases}: Individuals with diagnosed Alcohol Use Disorder (AUD)
-    \item \textbf{25 controls}: Matched individuals without AUD
-    \item \textbf{Platform}: Illumina HumanMethylation450 BeadChip (450K array)
-    \item \textbf{CpG sites}: After quality control, approximately 50,000 high-variance CpG sites were analyzed
+    \item \textbf{23 cases} with diagnosed Alcohol Use Disorder (AUD)
+    \item \textbf{25 controls} who were matched individuals without AUD
+    \item \textbf{Platform} was the Illumina HumanMethylation450 BeadChip (450K array)
+    \item \textbf{CpG sites} numbered approximately 50,000 high-variance sites after quality control
 \end{itemize}
 
-The 450K array measures methylation levels at over 485,000 CpG sites across the genome. Brain tissue was chosen because it shows strong epigenetic signatures of alcohol exposure and is directly relevant to the neurobiology of addiction.
+The prefrontal cortex is the brain region responsible for decision-making and impulse control. It's basically the part of your brain that says ``maybe don't have that fifth drink.'' This makes it directly relevant to studying addiction.
 
-\subsection{Preprocessing: Cleaning the Real Data}
+\subsection{Preprocessing}
 
-Real methylation data requires rigorous quality control. Our preprocessing pipeline removed probes with more than 5\% missing values, imputed remaining missing values using probe medians, filtered low-variance probes (variance $<$ 0.0005), selected the top 50,000 most variable CpGs for computational efficiency, and detected sample outliers using PCA (3 outliers identified and retained for analysis).
+Real methylation data is messy. Our preprocessing pipeline removed probes with more than 5\% missing values (55,170 removed). We imputed remaining missing values using probe medians. We filtered low-variance probes with variance below 0.0005. We selected the top 50,000 most variable CpGs for computational efficiency. And we detected sample outliers using PCA with 3 outliers identified and retained for analysis.
 
-\subsection{Feature Engineering: Finding the Signal}
+\subsection{Feature Engineering}
 
-With 50,000 CpG sites per sample, we used variance-based selection (500 most variable sites), Principal Component Analysis (20 components), association-based selection (200 sites most associated with AUD status), and epigenetic age calculation (Horvath, PhenoAge, GrimAge clocks).
+With 50,000 CpG sites per sample we used variance-based selection to keep the 500 most variable sites. We used Principal Component Analysis to get 20 components. We used association-based selection to find the 200 sites most associated with AUD status. And we calculated epigenetic age using the Horvath, PhenoAge and GrimAge clocks.
 
 \subsection{The Models}
 
-We tested three approaches:
+We tested three approaches.
 
-\textbf{Elastic Net Regression}: The workhorse of genetics research, combining L1 and L2 regularization to handle high-dimensional data where features outnumber samples.
+\textbf{Elastic Net Regression} is the workhorse of genetics research. It combines L1 and L2 regularization to handle high-dimensional data where features outnumber samples. Think of it like a very picky editor that throws out unimportant features while keeping the good ones.
 
-\textbf{Random Forest}: An ensemble of 100 decision trees---like asking 100 experts and going with the majority vote.
+\textbf{Random Forest} is an ensemble of 100 decision trees. Like asking 100 experts and going with the majority vote.
 
-\textbf{EpiAlcNet (Our Novel Architecture)}: A multi-pathway neural network with self-attention, multi-scale CNN, and BiLSTM pathways designed specifically for methylation data.
+\textbf{EpiAlcNet} is our novel architecture. It's a multi-pathway neural network with self-attention and multi-scale CNN and BiLSTM pathways designed specifically for methylation data. Think of it as three different experts analyzing the evidence and then combining their conclusions.
 
-\newpage
+
 
 % ============================================
 % RESULTS
@@ -158,31 +159,31 @@ EpiAlcNet      & 0.84 & 70.0\% & 100\% & 40.0\% \\
 \end{tabular}
 \end{table}
 
-Elastic Net achieved an outstanding AUC of 0.96 on this real dataset, demonstrating that DNA methylation patterns robustly distinguish individuals with AUD from controls. The simpler linear model outperformed the deep learning approach, likely due to the small sample size (n=48) which limits neural network training.
+Elastic Net achieved an outstanding AUC of 0.96 on this real dataset. That means it correctly distinguished people with AUD from controls 96\% of the time. The simpler linear model actually outperformed the fancy deep learning approach. Why? With only 48 samples neural networks don't have enough data to learn effectively. It's like trying to teach someone to recognize faces by showing them only 48 photos. Sometimes simpler is better.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{fig1_roc_curves.png}
-    \caption{ROC curves for all models. The closer to the top-left corner, the better. EpiAlcNet dominates.}
+    \caption{ROC curves for all models. The closer to the top-left corner the better. Elastic Net shows the highest curve indicating best performance.}
 \end{figure}
 
 \subsection{What Features Mattered Most?}
 
-The top predictive features were Principal Components (capturing global methylation patterns), association-based CpG sites (cg20034712, cg10526376, cg05029148), and variance-based CpG sites. Interestingly, the age acceleration features that dominated in synthetic data were less prominent here, suggesting the real biological signal is more complex and distributed across the methylome.
+The top predictive features were Principal Components which capture global methylation patterns along with association-based CpG sites like cg20034712 and cg10526376 and cg05029148. Also important were variance-based CpG sites. The signal was distributed across many different CpG sites rather than concentrated in just a few. This suggests the biological signature of alcohol is complex and affects many parts of the genome.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.85\textwidth]{fig2_feature_importance.png}
-    \caption{Top 25 features by importance. Epigenetic age acceleration completely dominates individual CpG sites.}
+    \caption{Top 25 features by importance. Principal components and specific CpG sites dominate the ranking.}
 \end{figure}
 
 \subsection{The Aging Effect}
 
-We compared epigenetic age acceleration between AUD cases and controls in the real data:
+We compared epigenetic age acceleration between AUD cases and controls in the real data.
 
 \begin{table}[H]
 \centering
-\caption{Age Acceleration in GSE49393 (Real Data)}
+\caption{Age Acceleration in GSE49393 Real Data}
 \begin{tabular}{@{}lcccc@{}}
 \toprule
 \textbf{Clock} & \textbf{Controls} & \textbf{AUD Cases} & \textbf{Difference} & \textbf{P-value} \\
@@ -194,21 +195,21 @@ GrimAge   & +0.09 years & -0.10 years & -0.20 years & p = 0.82 \\
 \end{tabular}
 \end{table}
 
-\textit{Note}: The age acceleration differences were not statistically significant with this sample size (n=48). While PhenoAge showed the expected trend (+0.57 years in cases), larger samples would be needed to detect the 2-3 year effects reported in previous literature.
+The results are interesting but not statistically significant. PhenoAge showed the expected trend with AUD cases appearing about half a year older biologically. But with only 48 samples we simply don't have enough statistical power to detect small effects. Previous studies with 500+ participants found 2-3 years of acceleration. We're seeing the same direction just not enough data to be confident about it.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.85\textwidth]{fig3_age_acceleration.png}
-    \caption{Age acceleration by group. Drinkers consistently appear biologically older across all three epigenetic clocks.}
+    \caption{Age acceleration by group showing the distribution of biological age differences.}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{fig4_pca_scatter.png}
-    \caption{PCA visualization showing clear separation between control and alcohol groups.}
+    \caption{PCA visualization showing separation between control and alcohol groups.}
 \end{figure}
 
-\newpage
+
 
 % ============================================
 % DISCUSSION
@@ -217,30 +218,111 @@ GrimAge   & +0.09 years & -0.10 years & -0.20 years & p = 0.82 \\
 
 \subsection{The Big Picture}
 
-Our results using real brain methylation data provide strong evidence that alcohol use disorder leaves measurable, predictable marks on DNA. Elastic Net achieved an AUC of 0.96 on real postmortem prefrontal cortex samples, demonstrating that methylation patterns robustly distinguish individuals with AUD from controls.
+Our results using real brain methylation data provide strong evidence that alcohol use disorder leaves measurable predictable marks on DNA. Elastic Net achieved an AUC of 0.96 on real postmortem prefrontal cortex samples. That's not just good. That's exceptional for biological data.
 
-This makes biological sense. Alcohol metabolism generates reactive oxygen species (those ``free radicals'' you've heard about). It depletes folate, which cells need to maintain normal methylation patterns. It triggers chronic inflammation. All of these processes alter methylation patterns and, over time, may accelerate cellular aging.
+This makes biological sense. Alcohol metabolism generates reactive oxygen species. Those ``free radicals'' you've heard about. It depletes folate which cells need to maintain normal methylation patterns. It triggers chronic inflammation. All of these processes alter methylation patterns and over time may accelerate cellular aging.
+
+\subsection{Why the Simple Model Won}
+
+You might expect the fancy deep learning model to beat the simple statistical approach. But Elastic Net crushed EpiAlcNet. What gives?
+
+The answer is sample size. With only 48 samples neural networks are like a student trying to learn calculus from a pamphlet. They need lots of examples to learn patterns. Elastic Net on the other hand is like a very experienced detective who can work with limited evidence. It knows what to look for and doesn't get distracted by noise.
+
+This is actually a common finding in biology. When data is expensive or limited (like postmortem brain tissue) simple interpretable models often outperform complex ones. The lesson? Don't use a sledgehammer when a scalpel will do.
 
 \subsection{Clinical Implications}
 
-Our findings on real human tissue suggest methylation-based alcohol biomarkers could have clinical utility. \textbf{Objective assessment}: Unlike self-reports, DNA methylation provides objective biological evidence. \textbf{Early intervention}: Methylation signatures could identify at-risk individuals. \textbf{Brain tissue relevance}: Analyzing prefrontal cortex tissue provides direct insight into the neurological effects of alcohol.
+Our findings on real human tissue suggest methylation-based markers could have real utility.
+
+\textbf{Objective assessment} means unlike self-reports DNA methylation provides biological evidence that can't be faked or forgotten.
+
+\textbf{Early intervention} means methylation signatures could potentially identify at-risk individuals before they develop full-blown alcohol problems.
+
+\textbf{Brain tissue relevance} means analyzing prefrontal cortex tissue provides direct insight into how alcohol affects the decision-making center of the brain.
 
 \subsection{Limitations}
 
-We must acknowledge real limitations. Our sample size (n=48) is small for machine learning, which may explain why simpler models outperformed deep learning. The age acceleration differences were not statistically significant, likely due to power limitations. Postmortem brain tissue may differ from living tissue, and methylation patterns vary by ancestry and other factors.
+Let's be honest about what we don't know.
 
-\subsection{Ethical Considerations}
+Our sample size of 48 is small for machine learning. This likely explains why deep learning underperformed and why age acceleration effects weren't significant. We'd need 200+ samples to really nail down those effects.
 
-A blood test revealing drinking history could be misused for insurance discrimination, employment screening, or surveillance. Any real-world deployment would require strict regulations, informed consent, and robust privacy protections.
+Postmortem brain tissue may differ from living tissue. Dead cells don't behave exactly like living ones. And these individuals all died which means they may have had other health issues affecting their methylation.
 
-\newpage
+This is just one dataset. External validation in independent cohorts is essential before anyone should get too excited about clinical applications.
+
+Confounding factors like smoking status and medications and cause of death could influence the results. We controlled for what we could but there's always unknown unknowns.
+
+
+
+% ============================================
+% SOCIETAL AND POLITICAL IMPLICATIONS
+% ============================================
+\subsection{Societal and Political Implications}
+
+This section deserves serious attention because the ability to read someone's drinking history from their DNA isn't just a scientific breakthrough. It's a potential Pandora's box of ethical and political challenges.
+
+\subsubsection{The Privacy Problem}
+
+Imagine going for a routine blood test and your insurance company finding out you've been drinking heavily for the past decade. Not because you told them but because your DNA ratted you out. This is the privacy nightmare that keeps bioethicists up at night.
+
+DNA methylation data is deeply personal. It doesn't just reveal alcohol use. The same data could potentially reveal drug use and mental health history and stress levels and aging rate and susceptibility to certain diseases. Once this technology exists the temptation to misuse it becomes enormous.
+
+Current privacy laws like HIPAA in the United States were written before anyone imagined that a blood sample could reveal behavioral history. We need new legal frameworks that specifically address epigenetic privacy. Who owns your methylation data? Who can access it? What happens if it's leaked? These questions don't have good answers yet.
+
+\subsubsection{Insurance and Employment Discrimination}
+
+Let's talk about money. Insurance companies would love to know your drinking history. A test showing accelerated epigenetic aging could justify higher premiums or denied coverage. ``Your GrimAge shows you're biologically 5 years older than your chronological age. Coverage denied.''
+
+Employers might also abuse this technology. Imagine job applications requiring an ``epigenetic health screening.'' Companies could discriminate against people whose DNA suggests they're heavy drinkers even if they've been sober for years. The Genetic Information Nondiscrimination Act (GINA) prohibits genetic discrimination but epigenetic data exists in a legal gray zone. Methylation patterns reflect both genetics AND behavior so it's unclear whether current protections apply.
+
+This could create a two-tiered society. Those with ``clean'' epigenetic profiles get jobs and insurance. Those whose cells tell a different story face systematic discrimination. This isn't hypothetical. It's the logical endpoint of unregulated biological surveillance.
+
+\subsubsection{Criminal Justice Concerns}
+
+Consider the courtroom. ``Your Honor the defendant's DNA methylation proves he was drinking heavily.'' This sounds like ironclad evidence but it's fraught with problems.
+
+First methylation patterns reflect long-term exposure not acute intoxication. Someone sober for five years might still carry methylation marks from their drinking days. Using this as evidence of current behavior would be scientifically invalid but potentially legally compelling to juries who don't understand the nuances.
+
+Second forensic applications could be coercive. Imagine parole officers requiring regular ``epigenetic sobriety tests.'' Or courts mandating methylation testing as a condition of custody arrangements. The technology could become a tool of surveillance and control particularly affecting marginalized communities who already face disproportionate scrutiny from the criminal justice system.
+
+\subsubsection{Public Health vs Individual Rights}
+
+There's a genuine tension between public health benefits and individual rights. From a population health perspective having objective biomarkers for alcohol use could be transformative. We could identify at-risk populations and target interventions and measure the effectiveness of public health campaigns.
+
+But at what cost? Mandatory testing could stigmatize alcohol use disorder which is recognized as a medical condition not a moral failing. People might avoid seeking help if they fear their DNA will be used against them later. The very intervention meant to help could drive the problem underground.
+
+Different cultures and political systems will handle this differently. Authoritarian governments might mandate population-wide epigenetic screening. Democratic societies will need to balance public health with civil liberties. International standards are desperately needed but don't exist.
+
+\subsubsection{What Should We Do?}
+
+The technology is coming whether we're ready or not. Here's what we need.
+
+\textbf{New legislation} specifically addressing epigenetic privacy. GINA needs expansion to clearly cover methylation data. The European GDPR provides a starting framework but more specificity is needed.
+
+\textbf{Informed consent protocols} that clearly explain what methylation testing reveals and how the data will be used and stored and who can access it.
+
+\textbf{Research ethics guidelines} for studies like this one. Even analyzing publicly available datasets raises questions about consent since participants may not have anticipated these applications.
+
+\textbf{Public education} about what epigenetics can and cannot reveal. Preventing misunderstanding is essential before courts and employers and insurers start demanding tests they don't fully understand.
+
+\textbf{International frameworks} because DNA data crosses borders and different countries have wildly different privacy standards.
+
+The power to read behavioral history from DNA is remarkable. With that power comes remarkable responsibility. We have maybe a decade before this technology becomes widespread. That's not much time to get the ethics right.
+
+
 
 % ============================================
 % CONCLUSION
 % ============================================
 \section{Conclusion}
 
-This project demonstrated that DNA methylation contains robust, machine-readable signatures of alcohol use disorder using real human brain tissue data. Analyzing the GSE49393 dataset (Zhang et al., 2013), our Elastic Net model achieved an outstanding AUC of 0.96 on postmortem prefrontal cortex samples, confirming that methylation patterns provide strong discriminative power between AUD cases and controls. While epigenetic age acceleration showed expected trends (PhenoAge +0.57 years in cases), larger samples would be needed to achieve statistical significance for these subtle effects. These findings—validated on real biological data—advance our understanding of alcohol's molecular footprint in the brain. However, technical capability must be matched with ethical responsibility regarding privacy and potential misuse of such biomarkers.
+This project demonstrated that DNA methylation in the prefrontal cortex contains robust machine-readable signatures of alcohol use disorder. Using real human brain tissue data from the GSE49393 dataset our Elastic Net model achieved an outstanding AUC of 0.96 which means it correctly identified individuals with AUD 96\% of the time.
+
+The simpler statistical model outperformed our deep learning architecture which teaches an important lesson about matching methods to data size. With only 48 samples simple models shine.
+
+Epigenetic age acceleration showed the expected trend with PhenoAge indicating +0.57 years in AUD cases but larger samples would be needed to achieve statistical significance. The biological signal is there. We just need more data to prove it definitively.
+
+These findings validated on real biological data advance our understanding of alcohol's molecular footprint in the brain. But the societal implications are equally important. The ability to read drinking history from DNA raises profound questions about privacy and discrimination and surveillance. Technical capability must be matched with ethical responsibility. We can build these tools. The harder question is whether we should and how we can prevent their misuse.
 
 \newpage
 
@@ -263,6 +345,6 @@ This project demonstrated that DNA methylation contains robust, machine-readable
 
 \hangindent=0.5in Rosen, Adrienne D., et al. ``DNA Methylation Age Is Accelerated in Alcohol Dependence.'' \textit{Translational Psychiatry}, vol. 8, no. 1, 2018, article 182.
 
-\hangindent=0.5in Zhang, Huiping, et al. ``Differentially Co-expressed Genes in Postmortem Prefrontal Cortex of Individuals with Alcohol Use Disorders: Influence on Alcohol Metabolism-Related Pathways.'' \textit{Human Genetics}, vol. 133, no. 11, 2014, pp. 1383-1394.
+\hangindent=0.5in Zhang, Huiping, et al. ``Differentially Co-expressed Genes in Postmortem Prefrontal Cortex of Individuals with Alcohol Use Disorders.'' \textit{Human Genetics}, vol. 133, no. 11, 2014, pp. 1383-1394.
 
 \end{document}
